@@ -8,12 +8,26 @@ ng.controller('ControlsCtrl', function($scope) {
 	var socket = game.websocket("192.168.1.130", "1337", "catapult");
 
 
-	var masterVolume = 1;
-	var songs = [
-		{layers: 6}
-	];
+	var ANIMATION = {
+		ROTATION: 'rotation',
+		POSITION_X: 'position_x',
+		POSITION_Y: 'position_y'
+	};
 
+	var DIRECTION = {
+		CLOCKWISE: 'clockwise',
+		ANTI_CLOCKWISE: 'anti_clockwise'
+	};
+
+
+	var masterVolume = 0;
+	var songs = [
+		{layers: 2}
+	];
 	var songLayers = [];
+
+	var debug = true;
+	var currentIntensity = 0;
 
 
 	var queue = new createjs.LoadQueue(true);
@@ -25,7 +39,7 @@ ng.controller('ControlsCtrl', function($scope) {
 		};
 	});
 
-	queue.on('complete', function(a, b, c) {
+	queue.on('complete', function(event) {
 		angular.forEach(queue.getItems(), function(sound) {
 			songLayers.push(createjs.Sound.play(sound.item.id, 0, 0, true));
 		});
@@ -36,20 +50,15 @@ ng.controller('ControlsCtrl', function($scope) {
 
 
 	$scope.intensity = {
-		model: 0
+		model: currentIntensity
 	};
-
-	var currentIntensity = $scope.intensity.model;
 
 	$scope.$watch('intensity.model', function(newIntensity) {
 		currentIntensity = newIntensity;
 
 		setSongLayerVolumes();
+		animateGroups(true);
 	});
-
-	var ANIMATION = {
-		ROTATION: 'rotation'
-	};
 
 
 	function setSongLayerVolumes() {
@@ -75,38 +84,89 @@ ng.controller('ControlsCtrl', function($scope) {
 					y: 100
 				},
 				pivot: {
-					x: 20
+					x: 0
 				},
 				rotation: 0,
 				animations: [
 					{
 						type: ANIMATION.ROTATION,
+						value: 3,
 						time: 200,
-						multiplier: 3,
 						minIntensity: 3,
 						maxIntensity: 4
 					}
-				]
-			},
-			{
-				name: 'images/beugel.png',
-				position: {
-					x: 20,
-					y: 100
-				},
-				pivot: {
-					x: 20
-				},
-				rotation: 0,
-				animations: [
+				],
+				images: [
 					{
-						type: ANIMATION.ROTATION,
-						time: 200
+						name: 'images/beugel.png',
+						position: {
+							x: 0,
+							y: 100
+						},
+						pivot: {
+							x: 161
+						},
+						rotation: 0,
+						animations: [
+							{
+								type: ANIMATION.ROTATION,
+								value: 10,
+								direction: DIRECTION.CLOCKWISE,
+								time: 200
+							}
+						]
 					}
 				]
 			}
 		]
 	});
+
+	buildAnimationGroups();
+	animateGroups();
+
+
+	function buildAnimationGroup(group, parent) {
+		parent = parent || stage;
+
+		angular.forEach(group.images, function(image) {
+
+			var container = new createjs.Container();
+			var x = image.position.x || 0;
+			var y = image.position.y || 0;
+			var pivotX = image.pivot.x || 0;
+			var pivotY = image.pivot.y || 0;
+
+			container.x = x + pivotX;
+			container.y = y + pivotY;
+
+			container.regX = pivotX;
+			container.regY = pivotY;
+
+			parent.addChild(container);
+
+			var bitmap = new createjs.Bitmap('assets/' + image.name);
+			container.addChild(bitmap);
+
+			image.object = container;
+
+			if (debug) {
+				var pivotPoint = new createjs.Shape();
+				pivotPoint.graphics.beginFill('red').drawCircle(0, 0, 5);
+				pivotPoint.x = container.regX;
+				pivotPoint.y = container.regY;
+				container.addChild(pivotPoint);
+			}
+
+			if (image.images && image.images.length) {
+				buildAnimationGroup(image, container);
+			}
+		});
+	}
+	function buildAnimationGroups() {
+		angular.forEach(animationsGroups, function(animationGroup) {
+			buildAnimationGroup(animationGroup);
+		});
+	}
 
 
 	function animateGroup(group) {
@@ -128,6 +188,8 @@ ng.controller('ControlsCtrl', function($scope) {
 			createjs.Tween.removeTweens(object);
 
 			angular.forEach(image.animations, function(animation) {
+				console.log(animation);
+
 
 				var resetToDefault = false;
 
@@ -141,7 +203,14 @@ ng.controller('ControlsCtrl', function($scope) {
 					resetToDefault = true;
 				}
 
-				var animationValue = currentIntensity * (animation.multiplier || 1);
+				var intensityMultiplier = (currentIntensity * (animation.multiplier || 1)) || 1;
+
+				var animationValue = intensityMultiplier * animation.value;
+				var animationTime = animation.time || 200;
+				var animationEaseTo = animation.easeTo || createjs.Ease.getPowInOut(2);
+				var animationEaseFrom = animation.easeFrom || createjs.Ease.getPowInOut(10);
+
+				console.log(animation.type, animationValue, animationTime);
 
 				switch(animation.type) {
 					case ANIMATION.ROTATION : {
@@ -150,18 +219,59 @@ ng.controller('ControlsCtrl', function($scope) {
 
 						if (!resetToDefault) {
 
+							var direction = animation.direction || DIRECTION.CLOCKWISE;
+
 							// reset rotation to current default intensity
-							object.rotation = rotation;
+							object.rotation = direction === DIRECTION.CLOCKWISE ? rotation : -rotation;
+
+							var to = direction === DIRECTION.CLOCKWISE ? -rotation : rotation;
+							var from = direction === DIRECTION.CLOCKWISE ? rotation : -rotation;
 
 							createjs.Tween.get(object, {loop: true})
-								.to({rotation: -rotation}, animation.time, createjs.Ease.getPowInOut(10))
-								.to({rotation: rotation}, animation.time, createjs.Ease.getPowInOut(2))
+								.to({rotation: to}, animationTime, animationEaseTo)
+								.to({rotation: from}, animationTime, animationEaseFrom)
 								.call(checkTweenValidity);
 						}
 						else {
 							createjs.Tween.get(object, {})
-								.to({rotation: image.rotation}, animation.time, createjs.Ease.getPowInOut(2));
+								.to({rotation: image.rotation}, animationTime, animationEaseFrom);
 						}
+						break;
+					}
+					case ANIMATION.POSITION_X : {
+
+						var defaultX = (image.position.x || 0) + (image.pivot.x || 0);
+						var positionX = animationValue;
+
+						console.log(defaultX, positionX);
+
+						if (!resetToDefault) {
+							createjs.Tween.get(object, {loop: true})
+								.to({x: defaultX + positionX}, animationTime, animationEaseTo)
+								.to({x: defaultX}, animationTime, animationEaseFrom)
+								.call(checkTweenValidity);
+						}
+						else {
+							createjs.Tween.get(object, {})
+								.to({x: defaultX}, animationTime, animationEaseFrom);
+						}
+						break;
+					}
+					case ANIMATION.POSITION_Y : {
+						var defaultY = (image.position.y || 0) + (image.pivot.y || 0);
+						var positionY = animationValue;
+
+						if (!resetToDefault) {
+							createjs.Tween.get(object, {loop: true})
+								.to({y: defaultY + positionY}, animationTime, animationEaseTo)
+								.to({y: defaultY}, animationTime, animationEaseFrom)
+								.call(checkTweenValidity);
+						}
+						else {
+							createjs.Tween.get(object, {})
+								.to({y: defaultY}, animationTime, animationEaseFrom);
+						}
+						break;
 					}
 				}
 
@@ -170,36 +280,19 @@ ng.controller('ControlsCtrl', function($scope) {
 					totalAnimations += 1;
 				}
 			});
+
+			if (image.images && image.images.length) {
+				animateGroup(image);
+			}
 		});
 
 		$scope.totalAnimations = totalAnimations;
-	};
-
-
-	angular.forEach(animationsGroups, function(animationGroup) {
-
-		var parent = stage;
-		angular.forEach(animationGroup.images, function(image) {
-
-			var container = new createjs.Container();
-			container.x = image.position.x || 0;
-			container.y = image.position.y || 0;
-
-			container.regX = image.pivot.x || 0;
-			container.regY = image.pivot.y || 0;
-
-			parent.addChild(container);
-
-			var bitmap = new createjs.Bitmap('assets/' + image.name);
-			container.addChild(bitmap);
-
-			parent = container;
-
-			image.object = container;
+	}
+	function animateGroups() {
+		angular.forEach(animationsGroups, function(animationGroup) {
+			animateGroup(animationGroup);
 		});
-
-		animateGroup(animationGroup);
-	});
+	}
 
 
 
