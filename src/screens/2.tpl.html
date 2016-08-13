@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" ng-app="hackaton">
 <head>
 	<meta charset="utf-8">
 	<title>Gametest</title>
@@ -7,10 +7,17 @@
 
 	<!-- include: "type": "css", "files": "vendor/bower/**/*.css" -->
 </head>
-<body onload="initGame();">
+<body ng-controller="ControlsCtrl">
+
 <canvas id="gameCanvas" width="1280" height="720">
 	alternate content
 </canvas>
+
+<div style="z-index: 1000; position: relative; background-color: #000; color: #fff;">
+	<input type="number" name="points" min="0" max="6" step="1" ng-model="intensity.model">
+
+	Total animations: {{totalAnimations}}
+</div>
 
 <script>
 	var $$gamesetup = {

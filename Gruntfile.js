@@ -28,9 +28,14 @@ module.exports = function(grunt) {
 				},
 				files: [
 					'Gruntfile.js',
-					'src/js/*.js',
-					'src/html/*.html'
+					'src/js/**/*.js',
+					'screens/**/*.html',
+					'screens/*/assets/js/**/*.js'
 				]
+			},
+			html: {
+				files: ['src/screens/*.html'],
+				tasks: ['includeSource']
 			}
 		},
 
@@ -51,7 +56,7 @@ module.exports = function(grunt) {
 
 	grunt.registerTask('serve', [
 		'default',
-		'connect:server',
+		//'connect:server',
 		'watch'
 	]);
 
