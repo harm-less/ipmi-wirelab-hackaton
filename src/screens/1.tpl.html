@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>Gametest</title>
+	<link rel="stylesheet" href="assets/css/game.css">
+
+	<!-- include: "type": "css", "files": "vendor/bower/**/*.css" -->
+</head>
+<body onload="initGame();">
+<canvas id="gameCanvas" width="1280" height="720">
+	alternate content
+</canvas>
+
+<script>
+	var $$gamesetup = {
+		is_local: false,
+		tsps_ip: "192.168.1.241",
+		tsps_port: 7681,
+		gameWidth: 675,
+		gameHeight: 675
+	};
+	// setTimeout(function(){ location.reload(); }, 60000);
+</script>
+
+<!-- include: "type": "js", "files": "vendor/**/*.js" -->
+
+<!-- include: "type": "js", "files": "src/js/**/*.js" -->
+
+<script src="assets/js/obj/animatedCircle.js"></script>
+<script src="assets/js/main.js"></script>
+</body>
+</html>

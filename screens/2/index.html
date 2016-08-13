@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>Gametest</title>
+	<link rel="stylesheet" href="assets/css/game.css">
+
+	
+</head>
+<body onload="initGame();">
+<canvas id="gameCanvas" width="1280" height="720">
+	alternate content
+</canvas>
+
+<script>
+	var $$gamesetup = {
+		is_local: false,
+		tsps_ip: "192.168.1.241",
+		tsps_port: 7681,
+		gameWidth: 675,
+		gameHeight: 675
+	};
+	// setTimeout(function(){ location.reload(); }, 60000);
+</script>
+
+<script src="../../vendor/angular.js"></script>
+<script src="../../vendor/bower/angular.js"></script>
+<script src="../../vendor/bower/jquery.js"></script>
+<script src="../../vendor/bower/lib/easeljs-0.8.2.combined.js"></script>
+<script src="../../vendor/bower/lib/preloadjs-0.6.2.combined.js"></script>
+<script src="../../vendor/bower/lib/soundjs-0.6.2.combined.js"></script>
+<script src="../../vendor/bower/lib/tweenjs-0.6.2.combined.js"></script>
+<script src="../../vendor/bower/underscore.js"></script>
+<script src="../../vendor/jquery.js"></script>
+<script src="../../vendor/lib/easeljs-0.8.2.combined.js"></script>
+<script src="../../vendor/lib/preloadjs-0.6.2.combined.js"></script>
+<script src="../../vendor/lib/soundjs-0.6.2.combined.js"></script>
+<script src="../../vendor/lib/tweenjs-0.6.2.combined.js"></script>
+<script src="../../vendor/TSPS-1.2.js"></script>
+<script src="../../vendor/underscore.js"></script>
+
+<script src="../../src/js/Game.js"></script>
+<script src="../../src/js/game/mousePerson.js"></script>
+<script src="../../src/js/game/websocket.js"></script>
+<script src="../../src/js/trackerBase.js"></script>
+<script src="../../src/js/TSPS/GameTSPS.js"></script>
+<script src="../../src/js/TSPS/src/catapult.js"></script>
+<script src="../../src/js/TSPS/src/draw.js"></script>
+<script src="../../src/js/TSPS/src/follow.js"></script>
+
+<script src="assets/js/obj/animatedCircle.js"></script>
+<script src="assets/js/main.js"></script>
+</body>
+</html>

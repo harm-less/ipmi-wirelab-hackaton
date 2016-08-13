@@ -1,0 +1,30 @@
+{
+  "name": "Wirelab Hackaton",
+  "description": "",
+  "main": "index.js",
+  "authors": [
+    "Harm van der Werf <harmvdwerf@gmail.com>"
+  ],
+  "license": "ISC",
+  "homepage": "https://github.com/harm-less/ipms-wirelab",
+  "moduleType": [
+    "amd"
+  ],
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "~1.7.1",
+    "angular": "~1.5.7",
+    "underscore": "~1.8.3",
+    "EaselJS": "~0.8.2",
+    "PreloadJS": "~0.6.2",
+    "TweenJS": "~0.6.2",
+    "SoundJS": "~0.6.2"
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "name": "wirelab-hackaton",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/harm-less/ipms-wirelab.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/harm-less/ipms-wirelab/issues"
+  },
+  "homepage": "https://github.com/harm-less/ipms-wirelab#readme",
+  "devDependencies": {
+    "grunt": "^1.0.1",
+    "grunt-cli": "^1.2.0",
+    "grunt-contrib-connect": "^1.0.2",
+    "grunt-contrib-watch": "^1.0.0",
+    "grunt-bower": "^0.21.2",
+    "grunt-include-source": "^1.0.0"
+  }
+}
