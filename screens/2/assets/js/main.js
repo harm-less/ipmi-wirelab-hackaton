@@ -22,7 +22,8 @@ ng.controller('ControlsCtrl', function($scope) {
 
 
 	var debug = $scope.debug = game.debug;
-	var currentIntensity = 0;
+	var shouldListen = false;
+	var currentIntensity = 4;
 
 
 	var currentSong = {};
@@ -34,6 +35,7 @@ ng.controller('ControlsCtrl', function($scope) {
 	};
 
 	$scope.$watch('intensity.model', function(newIntensity) {
+		console.log(newIntensity);
 		currentIntensity = newIntensity;
 	});
 
@@ -117,6 +119,7 @@ ng.controller('ControlsCtrl', function($scope) {
 									type: ANIMATION.ROTATION,
 									value: 3,
 									direction: DIRECTION.CLOCKWISE,
+									minIntensity: 2,
 									maxIntensity: 4
 								}
 							]
@@ -157,6 +160,187 @@ ng.controller('ControlsCtrl', function($scope) {
 							type: ANIMATION.POSITION_X,
 							value: -2,
 							multiplier: .2,
+							minIntensity: 3
+						}
+					]
+				}
+			]
+		},
+
+		// man behind foreground people
+		{
+			images: [
+				{
+					name: 'images/_0026_Hoofd-Man-schrikken.png',
+					position: {
+						x: 975,
+						y: 240
+					},
+					pivot: {
+						x: 100,
+						y: 150
+					},
+					rotation: 0,
+					animations: [
+						{
+							type: ANIMATION.POSITION_X,
+							value:-.5,
+							multiplier: .4,
+							minIntensity: 3
+						},
+						{
+							type: ANIMATION.POSITION_Y,
+							value: -2,
+							multiplier: .4,
+							minIntensity: 3
+						}
+					]
+				}
+			]
+		},
+
+		// man behind foreground people
+		{
+			images: [
+				{
+					name: 'images/_0027_hoofd-Man-met-geweer.png',
+					position: {
+						x: 1275,
+						y: 300
+					},
+					pivot: {
+						x: 100,
+						y: 150
+					},
+					rotation: 0,
+					animations: [
+						{
+							type: ANIMATION.POSITION_X,
+							value:-.5,
+							multiplier: .4,
+							minIntensity: 3
+						},
+						{
+							type: ANIMATION.POSITION_Y,
+							value: -2,
+							multiplier: .4,
+							minIntensity: 3
+						}
+					]
+				}
+			]
+		},
+
+		// man behind foreground people
+		{
+			images: [
+				{
+					name: 'images/_0005_man-achtergrond-met-stok-hoofd.png',
+					position: {
+						x: 1355,
+						y: 120
+					},
+					pivot: {
+						x: 90,
+						y: 180
+					},
+					rotation: 0,
+					animations: [
+						{
+							type: ANIMATION.ROTATION,
+							direction: DIRECTION.ANTI_CLOCKWISE,
+							value: 1,
+							multiplier: .4,
+							minIntensity: 3
+						},
+						{
+							type: ANIMATION.POSITION_X,
+							value: 3,
+							multiplier: .1,
+							minIntensity: 3
+						},
+						{
+							type: ANIMATION.POSITION_Y,
+							value: -2,
+							multiplier: .4,
+							minIntensity: 3
+						}
+					]
+				}
+			]
+		},
+
+		// man behind foreground people
+		{
+			images: [
+				{
+					name: 'images/_0003_Man-rechts-hoed-Hoofd.png',
+					position: {
+						x: 1715,
+						y: 77
+					},
+					pivot: {
+						x: 85,
+						y: 125
+					},
+					rotation: 0,
+					animations: [
+						{
+							type: ANIMATION.ROTATION,
+							direction: DIRECTION.CLOCKWISE,
+							value: 2,
+							multiplier: 1,
+							minIntensity: 3
+						},
+						{
+							type: ANIMATION.POSITION_X,
+							value: 3,
+							multiplier: .1,
+							minIntensity: 3
+						},
+						{
+							type: ANIMATION.POSITION_Y,
+							value: -2,
+							multiplier: .4,
+							minIntensity: 3
+						}
+					]
+				}
+			]
+		},
+
+		// man behind foreground people
+		{
+			images: [
+				{
+					name: 'images/_0004_Man-rechts-hoofd-helm-hoofdrechts.png',
+					position: {
+						x: 1085,
+						y: -50
+					},
+					pivot: {
+						x: 75,
+						y: 175
+					},
+					rotation: 0,
+					animations: [
+						{
+							type: ANIMATION.ROTATION,
+							direction: DIRECTION.CLOCKWISE,
+							value: 2,
+							multiplier: 1,
+							minIntensity: 3
+						},
+						{
+							type: ANIMATION.POSITION_X,
+							value: 3,
+							multiplier: .1,
+							minIntensity: 3
+						},
+						{
+							type: ANIMATION.POSITION_Y,
+							value: -2,
+							multiplier: .4,
 							minIntensity: 3
 						}
 					]
@@ -348,6 +532,121 @@ ng.controller('ControlsCtrl', function($scope) {
 									maxIntensity: 2
 								}
 							]
+						}
+					]
+				}
+			]
+		},
+
+		// man behind two foreground with had
+		{
+			images: [
+				{
+					name: 'images/_0024_Hoofd-en-hoed-Man-links-veer-hoed.png',
+					position: {
+						x: 555,
+						y: -55
+					},
+					pivot: {
+						x: 60,
+						y: 150
+					},
+					rotation: 0,
+					animations: [
+						{
+							type: ANIMATION.ROTATION,
+							direction: DIRECTION.ANTI_CLOCKWISE,
+							value: 2,
+							multiplier: .5,
+							minIntensity: 3
+						},
+						{
+							type: ANIMATION.POSITION_Y,
+							value: 1,
+							multiplier: .5,
+							minIntensity: 3
+						}
+					]
+				}
+			]
+		},
+
+		// man behind two foreground with had
+		{
+			images: [
+				{
+					name: 'images/_0022_Hoofdhelm-Ridder-linksachterboven.png',
+					position: {
+						x: 725,
+						y: 40
+					},
+					pivot: {
+						x: 60,
+						y: 100
+					},
+					rotation: 0,
+					animations: [
+						{
+							type: ANIMATION.ROTATION,
+							direction: DIRECTION.CLOCKWISE,
+							value: 2,
+							multiplier: .5,
+							minIntensity: 3
+						}
+					],
+					images: [
+						{
+							name: 'images/_0023_Baardding-Ridder-linksachterboven.png',
+							position: {
+								x: 1,
+								y: 80
+							},
+							pivot: {
+								x: 60,
+								y: 100
+							},
+							rotation: 0,
+							animations: [
+								{
+									type: ANIMATION.POSITION_Y,
+									value: 1,
+									multiplier: .5,
+									minIntensity: 4
+								},
+								{
+									type: ANIMATION.POSITION_Y,
+									value: 1,
+									multiplier: .5,
+									minIntensity: 4
+								}
+							]
+						}
+					]
+				}
+			]
+		},
+
+		// man behind two foreground with had
+		{
+			images: [
+				{
+					name: 'images/_0021_Hoodmet-hoed-Man-achter-grote-hoed.png',
+					position: {
+						x: 890,
+						y: -5
+					},
+					pivot: {
+						x: 80,
+						y: 150
+					},
+					rotation: 0,
+					animations: [
+						{
+							type: ANIMATION.ROTATION,
+							direction: DIRECTION.CLOCKWISE,
+							value: 1,
+							multiplier: .5,
+							minIntensity: 3
 						}
 					]
 				}
@@ -612,7 +911,9 @@ ng.controller('ControlsCtrl', function($scope) {
 		if (!data.gameId || (data.gameId && data.gameId !== gameId)) return;
 
 		if (data.type === 'intensity.changed') {
-			currentIntensity = data.intensity;
+			if (shouldListen) {
+				currentIntensity = data.intensity;
+			}
 			animateGroups(true);
 			console.log('intensity.changed', data);
 		}
@@ -633,7 +934,10 @@ ng.controller('ControlsCtrl', function($scope) {
 	stage.addChild(bg);
 
 	buildAnimationGroups();
-	animateGroups();
+
+	setTimeout(function() {
+		animateGroups();
+	}, 1000);
 
 
 
