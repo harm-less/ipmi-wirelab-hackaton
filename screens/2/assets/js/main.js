@@ -21,40 +21,11 @@ ng.controller('ControlsCtrl', function($scope) {
 	};
 
 
-	var masterVolume = 0;
-	var songs = [
-		{
-			speed: 250,
-			layers: 6
-		}
-	];
-	var currentSong = songs[0];
-	var songLayers = [];
-
 	var debug = $scope.debug = game.debug;
-	var expectedIntensity = 0;
 	var currentIntensity = 0;
 
 
-	var queue = new createjs.LoadQueue(true);
-	queue.installPlugin(createjs.Sound);
-	angular.forEach(songs, function(song, songIndex) {
-		var layers = song.layers;
-		var layerNames = [];
-		for (var i = 0;i < layers;i++) {
-			var id = 'song' + songIndex + '-' + i;
-			queue.loadFile({id: id, src: '../../src/sounds/songs/' + (songIndex + 1) + '/' + (i + 1) + '.mp3', type: createjs.AbstractLoader.SOUND});
-			layerNames.push(id);
-		}
-
-		song.layers = layerNames;
-	});
-
-	queue.on('complete', function(event) {
-		playSong(currentSong);
-
-		setSongLayerVolumes();
-	});
+	var currentSong = {};
 
 
 
@@ -64,34 +35,7 @@ ng.controller('ControlsCtrl', function($scope) {
 
 	$scope.$watch('intensity.model', function(newIntensity) {
 		currentIntensity = newIntensity;
-
-		updatePainting();
 	});
-
-	function updatePainting() {
-		setSongLayerVolumes();
-		animateGroups(true);
-	}
-
-
-	function playSong(song) {
-		createjs.Sound.stop();
-
-		currentSong = song;
-		angular.forEach(song.layers, function(layerName) {
-			songLayers.push(createjs.Sound.play(layerName, {loop: -1}));
-		});
-	}
-
-	function setSongLayerVolumes() {
-		angular.forEach(songLayers, function(songLayer, index) {
-
-			var volume = (index >= currentIntensity ? 0 : 1) * masterVolume;
-
-			createjs.Tween.get(songLayer)
-				.to({volume: volume}, 1000, createjs.Ease.getPowInOut(2));
-		});
-	}
 
 
 
@@ -664,6 +608,24 @@ ng.controller('ControlsCtrl', function($scope) {
 	}
 
 
+	socket.listen = function(data) {
+		if (!data.gameId || (data.gameId && data.gameId !== gameId)) return;
+
+		if (data.type === 'intensity.changed') {
+			currentIntensity = data.intensity;
+			animateGroups(true);
+			console.log('intensity.changed', data);
+		}
+
+		if (data.type === 'song.changed') {
+			currentSong = data.song;
+			console.log('song', data.song);
+		}
+	};
+
+
+
+
 
 
 	var bg = new createjs.Bitmap("assets/images/_0028_Layer-1.png");
@@ -699,98 +661,6 @@ ng.controller('ControlsCtrl', function($scope) {
 	var crosshair = new createjs.Bitmap("assets/images/crossfire.png");
 	crosshair.scaleX = crosshair.scaleY = 0.5;
 	game.stage.addChild(crosshair);
-
-	function updateCurrentIntensity() {
-		if (currentIntensity === expectedIntensity) return;
-
-		if (currentIntensity > expectedIntensity) {
-			currentIntensity--;
-			debouncedCurrentIntensity();
-		}
-		if (currentIntensity < expectedIntensity) {
-			currentIntensity++;
-			debouncedCurrentIntensity();
-		}
-
-		console.log('update', currentIntensity, expectedIntensity);
-
-		updatePainting();
-	}
-	var debouncedCurrentIntensity = throttle(updateCurrentIntensity, 1000, {leading: true});
-
-
-
-	function throttle(func, wait, options) {
-		var timeout, context, args, result;
-		var previous = 0;
-		if (!options) options = {};
-
-		var later = function() {
-			previous = options.leading === false ? 0 : _.now();
-			timeout = null;
-			result = func.apply(context, args);
-			if (!timeout) context = args = null;
-		};
-
-		var throttled = function() {
-			var now = _.now();
-			if (!previous && options.leading === false) previous = now;
-			var remaining = wait - (now - previous);
-			context = this;
-			args = arguments;
-			if (remaining <= 0 || remaining > wait) {
-				if (timeout) {
-					clearTimeout(timeout);
-					timeout = null;
-				}
-				previous = now;
-				result = func.apply(context, args);
-				if (!timeout) context = args = null;
-			} else if (!timeout && options.trailing !== false) {
-				timeout = setTimeout(later, remaining);
-			}
-			return result;
-		};
-
-		throttled.cancel = function() {
-			clearTimeout(timeout);
-			previous = 0;
-			timeout = context = args = null;
-		};
-
-		return throttled;
-	};
-
-	socket.listen = function(data){
-		if (data.gameId !== gameId) return;
-
-		if (data.type === 'person.entered') {
-			expectedIntensity = Math.max(0, Math.min(6, data.total));
-			console.log('entered', currentIntensity);
-			debouncedCurrentIntensity();
-		}
-		if (data.type === 'person.left') {
-			expectedIntensity = Math.max(0, Math.min(6, data.total));
-			console.log('left', currentIntensity);
-			debouncedCurrentIntensity();
-
-		}
-
-		return;
-
-		if (data.type == "shot"){
-			var velocity = $$gamesetup.gameHeight - ((data.velocity-100)/675) * $$gamesetup.gameHeight;
-			game.set('velocity', velocity);
-			game.set('shotX', data.shotX);
-			initShotFired();
-		}
-
-		if (data.type == "aim"){
-			crosshair.x = $$gamesetup.gameWidth - (data.crosshairX/675) * $$gamesetup.gameWidth
-			crosshair.y = $$gamesetup.gameHeight - (data.crosshairY/475) * $$gamesetup.gameHeight + 400
-		}
-
-	};
 
 	socket.connect();
 

@@ -16,15 +16,226 @@ ng.controller('ControlsCtrl', function($scope) {
 	socket.listen = function(data){
 		if (data.gameId !== gameID) return;
 		console.log("listening", data);
-	}
+	};
 
 
 	var persons = [];
 	var person;
 
+	var expectedIntensity = 0;
+	var currentIntensity = 0;
+
 	$scope.intensity = {
 		model: 0
 	};
+
+
+	var masterVolume = 1;
+	var songs = [
+		{
+			speed: 250,
+			layers: 6
+		}
+	];
+	var currentSong = songs[0];
+	var songLayers = [];
+
+	var queue = new createjs.LoadQueue(true);
+	queue.installPlugin(createjs.Sound);
+	angular.forEach(songs, function(song, songIndex) {
+		var layers = song.layers;
+		var layerNames = [];
+		for (var i = 0;i < layers;i++) {
+			var id = 'song' + songIndex + '-' + i;
+			queue.loadFile({id: id, src: '../../src/sounds/songs/' + (songIndex + 1) + '/' + (i + 1) + '.mp3', type: createjs.AbstractLoader.SOUND});
+			layerNames.push(id);
+		}
+
+		song.layers = layerNames;
+	});
+
+	queue.on('complete', function(event) {
+		playSong(currentSong);
+
+		setSongLayerVolumes();
+	});
+
+	function updatePainting() {
+		setSongLayerVolumes();
+	}
+
+
+	function playSong(song) {
+		createjs.Sound.stop();
+
+		currentSong = song;
+		angular.forEach(song.layers, function(layerName) {
+			songLayers.push(createjs.Sound.play(layerName, {loop: -1}));
+		});
+
+		socket.send({
+			type: "song.changed",
+			song: song
+		});
+	}
+
+	function setSongLayerVolumes() {
+		angular.forEach(songLayers, function(songLayer, index) {
+
+			var volume = (index >= currentIntensity ? 0 : 1) * masterVolume;
+
+			createjs.Tween.get(songLayer)
+				.to({volume: volume}, 1000, createjs.Ease.getPowInOut(2));
+		});
+	}
+
+
+
+	function updateCurrentIntensity() {
+		console.log('update', expectedIntensity);
+		if (currentIntensity === expectedIntensity) return;
+
+		if (currentIntensity > expectedIntensity) {
+			currentIntensity--;
+			debouncedCurrentIntensity();
+		}
+		if (currentIntensity < expectedIntensity) {
+			currentIntensity++;
+			debouncedCurrentIntensity();
+		}
+
+		updatePainting();
+
+		console.log('intensity.changed', currentIntensity);
+
+		socket.send({
+			type: "intensity.changed",
+			intensity: currentIntensity
+		});
+	}
+	var debouncedCurrentIntensity = throttle(updateCurrentIntensity, 1000, {leading: true});
+
+
+
+	function throttle(func, wait, options) {
+		var timeout, context, args, result;
+		var previous = 0;
+		if (!options) options = {};
+
+		var later = function() {
+			previous = options.leading === false ? 0 : _.now();
+			timeout = null;
+			result = func.apply(context, args);
+			if (!timeout) context = args = null;
+		};
+
+		var throttled = function() {
+			var now = _.now();
+			if (!previous && options.leading === false) previous = now;
+			var remaining = wait - (now - previous);
+			context = this;
+			args = arguments;
+			if (remaining <= 0 || remaining > wait) {
+				if (timeout) {
+					clearTimeout(timeout);
+					timeout = null;
+				}
+				previous = now;
+				result = func.apply(context, args);
+				if (!timeout) context = args = null;
+			} else if (!timeout && options.trailing !== false) {
+				timeout = setTimeout(later, remaining);
+			}
+			return result;
+		};
+
+		throttled.cancel = function() {
+			clearTimeout(timeout);
+			previous = 0;
+			timeout = context = args = null;
+		};
+
+		return throttled;
+	};
+
+	socket.listen = function(data) {
+		if (!data.gameId || (data.gameId && data.gameId !== gameId)) return;
+
+		if (data.type === 'person.entered') {
+			expectedIntensity = Math.max(0, Math.min(6, data.total));
+			console.log('entered', currentIntensity);
+			debouncedCurrentIntensity();
+		}
+		if (data.type === 'person.left') {
+			expectedIntensity = Math.max(0, Math.min(6, data.total));
+			console.log('left', currentIntensity);
+			debouncedCurrentIntensity();
+		}
+	};
+
+
+
+
+	game.tsps.onEnter(function(data){
+		var circle = new createjs.Shape();
+		circle.graphics.beginFill("#ccc").drawCircle(0, 0, 20);
+		game.stage.addChild(circle);
+
+		game.tsps.follow(circle, {x:0, y:0});
+		persons[data.id] = (circle);
+
+		sendAddPersonEvent();
+	});
+
+	function sendAddPersonEvent(data) {
+
+		var total = objectSize(game.tsps.persons) + $scope.intensity.model;
+		console.log('person entered', total);
+		expectedIntensity = Math.max(0, Math.min(6, total));
+		console.log('entered', currentIntensity);
+		debouncedCurrentIntensity();
+	}
+
+	game.tsps.onLeave(function(data){
+		game.stage.removeChild(persons[data.id]);
+		persons.splice(data.id, 1);
+
+		sendRemovePersonEvent(data);
+	});
+
+	function sendRemovePersonEvent(data) {
+		var total = objectSize(game.tsps.persons) + $scope.intensity.model;
+		console.log('person left', total, objectSize(game.tsps.persons));
+
+		expectedIntensity = Math.max(0, Math.min(6, total));
+		console.log('left', currentIntensity);
+		debouncedCurrentIntensity();
+	}
+
+	$scope.$watch('intensity.model', function(newIntensity, oldIntensity) {
+
+		if (oldIntensity < newIntensity) {
+			sendAddPersonEvent();
+		}
+		else {
+			sendRemovePersonEvent();
+		}
+	});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 	var catapult = false;
 	var shootTimeOutMilli = 5000;
@@ -59,55 +270,6 @@ ng.controller('ControlsCtrl', function($scope) {
 	game.stage.addChild(pin_right);
 	game.stage.addChild(dop);
 	game.stage.addChild(dopHolder);
-
-	game.tsps.onEnter(function(data){
-		var circle = new createjs.Shape();
-		circle.graphics.beginFill("#ccc").drawCircle(0, 0, 20);
-		game.stage.addChild(circle);
-
-		game.tsps.follow(circle, {x:0, y:0});
-		persons[data.id] = (circle);
-
-		sendAddPersonEvent();
-	});
-
-	function sendAddPersonEvent(data) {
-
-		var total = objectSize(game.tsps.persons) + $scope.intensity.model;
-		console.log('person entered', total);
-		socket.send({
-			type: "person.entered",
-			total: total,
-			person: data || null
-		});
-	}
-
-	game.tsps.onLeave(function(data){
-		game.stage.removeChild(persons[data.id]);
-		persons.splice(data.id, 1);
-
-		sendRemovePersonEvent(data);
-	});
-
-	function sendRemovePersonEvent(data) {
-		var total = objectSize(game.tsps.persons) + $scope.intensity.model;
-		console.log('person left', total, objectSize(game.tsps.persons));
-		socket.send({
-			type: "person.left",
-			total: total,
-			person: data || null
-		});
-	}
-
-	$scope.$watch('intensity.model', function(newIntensity, oldIntensity) {
-
-		if (oldIntensity < newIntensity) {
-			sendAddPersonEvent();
-		}
-		else {
-			sendRemovePersonEvent();
-		}
-	});
 
 
 	var personShape = new createjs.Shape();
