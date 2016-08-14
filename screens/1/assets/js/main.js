@@ -9,7 +9,7 @@ ng.controller('ControlsCtrl', function($scope) {
 	var socket = game.websocket("192.168.1.124", "4000", gameID);
 	initGame();
 
-	var debug = game.debug;
+	var debug = $scope.debug = game.debug;
 
 	socket.connect();
 
@@ -30,7 +30,7 @@ ng.controller('ControlsCtrl', function($scope) {
 	};
 
 
-	var masterVolume = 0;
+	var masterVolume = 1;
 	var songs = [
 		{
 			speed: 250,
@@ -154,7 +154,7 @@ ng.controller('ControlsCtrl', function($scope) {
 	};
 
 	socket.listen = function(data) {
-		if (!data.gameId || (data.gameId && data.gameId !== gameId)) return;
+		if (!data.gameId || (data && data.gameId !== gameId)) return;
 
 		if (data.type === 'person.entered') {
 			expectedIntensity = Math.max(0, Math.min(6, data.total));

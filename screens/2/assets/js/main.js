@@ -22,7 +22,7 @@ ng.controller('ControlsCtrl', function($scope) {
 
 
 	var debug = $scope.debug = game.debug;
-	var shouldListen = false;
+	var shouldListen = true;
 	var currentIntensity = 4;
 
 
@@ -908,7 +908,7 @@ ng.controller('ControlsCtrl', function($scope) {
 
 
 	socket.listen = function(data) {
-		if (!data.gameId || (data.gameId && data.gameId !== gameId)) return;
+		if (!data.gameId || (data && data.gameId !== gameId)) return;
 
 		if (data.type === 'intensity.changed') {
 			if (shouldListen) {
