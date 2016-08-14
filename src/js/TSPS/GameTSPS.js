@@ -1,9 +1,15 @@
 var GameTSPS = function(local){
+
+  var that = this;
   this.is_local = (typeof $$gamesetup.is_local != 'undefined') ? $$gamesetup.is_local : true;
   this.onUpdateList = [];
-  this.onEnterList = [];
-  this.onLeaveList = [];
-  this.persons = [];
+  this.onEnterList = [function(data) {
+    that.persons['r' + data.id.toString()] = (data);
+  }];
+  this.onLeaveList = [function(data) {
+    delete that.persons['r' + data.id.toString()];
+  }];
+  that.persons = {};
 
   this.connection = this.is_local ? new TSPS.Connection() : new TSPS.Connection( $$gamesetup.tsps_ip, $$gamesetup.tsps_port );
 

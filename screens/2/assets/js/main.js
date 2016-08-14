@@ -21,7 +21,7 @@ ng.controller('ControlsCtrl', function($scope) {
 	};
 
 
-	var masterVolume = 1;
+	var masterVolume = 0;
 	var songs = [
 		{
 			speed: 250,
@@ -31,7 +31,8 @@ ng.controller('ControlsCtrl', function($scope) {
 	var currentSong = songs[0];
 	var songLayers = [];
 
-	var debug = true;
+	var debug = $scope.debug = game.debug;
+	var expectedIntensity = 0;
 	var currentIntensity = 0;
 
 
@@ -64,9 +65,13 @@ ng.controller('ControlsCtrl', function($scope) {
 	$scope.$watch('intensity.model', function(newIntensity) {
 		currentIntensity = newIntensity;
 
+		updatePainting();
+	});
+
+	function updatePainting() {
 		setSongLayerVolumes();
 		animateGroups(true);
-	});
+	}
 
 
 	function playSong(song) {
@@ -538,8 +543,6 @@ ng.controller('ControlsCtrl', function($scope) {
 
 	function animateGroup(group) {
 
-		var totalAnimations = 0;
-
 		var tempIntensity = currentIntensity;
 		function checkTweenValidity() {
 			if (currentIntensity !== tempIntensity) {
@@ -646,9 +649,6 @@ ng.controller('ControlsCtrl', function($scope) {
 					}
 
 					animation.isPlaying = !resetToDefault;
-					if (animation.isPlaying) {
-						totalAnimations += 1;
-					}
 				});
 			}
 
@@ -656,8 +656,6 @@ ng.controller('ControlsCtrl', function($scope) {
 				animateGroup(image);
 			}
 		});
-
-		$scope.totalAnimations = totalAnimations;
 	}
 	function animateGroups() {
 		angular.forEach(animationsGroups, function(animationGroup) {
@@ -678,6 +676,21 @@ ng.controller('ControlsCtrl', function($scope) {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 	var monstersHit = 0;
 
 
@@ -687,14 +700,80 @@ ng.controller('ControlsCtrl', function($scope) {
 	crosshair.scaleX = crosshair.scaleY = 0.5;
 	game.stage.addChild(crosshair);
 
+	function updateCurrentIntensity() {
+		if (currentIntensity === expectedIntensity) return;
+
+		if (currentIntensity > expectedIntensity) {
+			currentIntensity--;
+			debouncedCurrentIntensity();
+		}
+		if (currentIntensity < expectedIntensity) {
+			currentIntensity++;
+			debouncedCurrentIntensity();
+		}
+
+		console.log('update', currentIntensity, expectedIntensity);
+
+		updatePainting();
+	}
+	var debouncedCurrentIntensity = throttle(updateCurrentIntensity, 1000, {leading: true});
+
+
+
+	function throttle(func, wait, options) {
+		var timeout, context, args, result;
+		var previous = 0;
+		if (!options) options = {};
+
+		var later = function() {
+			previous = options.leading === false ? 0 : _.now();
+			timeout = null;
+			result = func.apply(context, args);
+			if (!timeout) context = args = null;
+		};
+
+		var throttled = function() {
+			var now = _.now();
+			if (!previous && options.leading === false) previous = now;
+			var remaining = wait - (now - previous);
+			context = this;
+			args = arguments;
+			if (remaining <= 0 || remaining > wait) {
+				if (timeout) {
+					clearTimeout(timeout);
+					timeout = null;
+				}
+				previous = now;
+				result = func.apply(context, args);
+				if (!timeout) context = args = null;
+			} else if (!timeout && options.trailing !== false) {
+				timeout = setTimeout(later, remaining);
+			}
+			return result;
+		};
+
+		throttled.cancel = function() {
+			clearTimeout(timeout);
+			previous = 0;
+			timeout = context = args = null;
+		};
+
+		return throttled;
+	};
+
 	socket.listen = function(data){
 		if (data.gameId !== gameId) return;
 
 		if (data.type === 'person.entered') {
-			$scope.intensity.model++;
+			expectedIntensity = Math.max(0, Math.min(6, data.total));
+			console.log('entered', currentIntensity);
+			debouncedCurrentIntensity();
 		}
 		if (data.type === 'person.left') {
-			$scope.intensity.model++;
+			expectedIntensity = Math.max(0, Math.min(6, data.total));
+			console.log('left', currentIntensity);
+			debouncedCurrentIntensity();
+
 		}
 
 		return;

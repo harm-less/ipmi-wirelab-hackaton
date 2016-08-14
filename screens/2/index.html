@@ -13,9 +13,7 @@
 	alternate content
 </canvas>
 
-<div style="z-index: 1000; position: relative; background-color: #000; color: #fff;">
-	<input type="number" name="points" min="0" max="6" step="1" ng-model="intensity.model">
-
+<div style="z-index: 1000; position: relative; background-color: #000; color: #fff;" ng-if="debug">
 	Total animations: {{totalAnimations}}
 </div>
 
@@ -43,7 +41,6 @@
 <script src="../../src/js/Game.js"></script>
 <script src="../../src/js/game/mousePerson.js"></script>
 <script src="../../src/js/game/websocket.js"></script>
-<script src="../../src/js/trackerBase.js"></script>
 <script src="../../src/js/TSPS/GameTSPS.js"></script>
 <script src="../../src/js/TSPS/src/catapult.js"></script>
 <script src="../../src/js/TSPS/src/draw.js"></script>

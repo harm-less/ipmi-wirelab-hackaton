@@ -1,158 +1,217 @@
-var game = new Game();
-var initGame = game.init.bind(game);
-var socket = game.websocket("192.168.1.124", "4000", "rembrandt");
 
-socket.connect();
+var ng = angular.module('hackaton', []);
+ng.controller('ControlsCtrl', function($scope) {
 
-$(document).ready( function() {
+	var gameID = "rembrandt";
 
-  socket.listen = function(data){
-    console.log("listeningggg", data)
-  }
+	var game = new Game();
+	var initGame = game.init.bind(game);
+	var socket = game.websocket("192.168.1.124", "4000", gameID);
+	initGame();
 
-  var persons = [];
-  var person;
+	var debug = game.debug;
 
-  var catapult = false;
-  var shootTimeOutMilli = 5000;
-  var shootTimeOut = false;
-  var is_shooting = false;
+	socket.connect();
 
-  var string_left = new createjs.Shape();
-  var string_right = new createjs.Shape();
+	socket.listen = function(data){
+		if (data.gameId !== gameID) return;
+		console.log("listening", data);
+	}
 
-  var pin_left = new createjs.Bitmap("assets/images/pin.png");
-  pin_left.scaleX = pin_left.scaleY = 0.5;
-  pin_left.scaleX *= -1;
-  pin_left.x = 33;
-  pin_left.y = $$gamesetup.gameHeight/2 - 200;
 
-  var pin_right = new createjs.Bitmap("assets/images/pin.png");
-  pin_right.scaleX = pin_right.scaleY = 0.5;
-  pin_right.x = $$gamesetup.gameWidth - 33;
-  pin_right.y = $$gamesetup.gameHeight/2 - 200;
+	var persons = [];
+	var person;
 
-  var dop = new createjs.Bitmap("assets/images/kroon.png");
-  dop.scaleX = dop.scaleY = 0.5;
-  dop.regY = 183;
+	$scope.intensity = {
+		model: 0
+	};
 
-  var dopHolder = new createjs.Bitmap("assets/images/houder.png");
-  dopHolder.scaleX = dopHolder.scaleY = 0.5;
+	var catapult = false;
+	var shootTimeOutMilli = 5000;
+	var shootTimeOut = false;
+	var is_shooting = false;
 
-  //add bottom screen visuals to stage
-  game.stage.addChild(string_left);
-  game.stage.addChild(string_right);
-  game.stage.addChild(pin_left);
-  game.stage.addChild(pin_right);
-  game.stage.addChild(dop);
-  game.stage.addChild(dopHolder);
+	var string_left = new createjs.Shape();
+	var string_right = new createjs.Shape();
 
-  game.tsps.onEnter(function(data){
-    var circle = new createjs.Shape();
-    circle.graphics.beginFill("#ccc").drawCircle(0, 0, 20);
-    game.stage.addChild(circle);
+	var pin_left = new createjs.Bitmap("assets/images/pin.png");
+	pin_left.scaleX = pin_left.scaleY = 0.5;
+	pin_left.scaleX *= -1;
+	pin_left.x = 33;
+	pin_left.y = $$gamesetup.gameHeight/2 - 200;
 
-    game.tsps.follow(circle, {x:0, y:0});
-    persons[data.id] = (circle);
-  })
+	var pin_right = new createjs.Bitmap("assets/images/pin.png");
+	pin_right.scaleX = pin_right.scaleY = 0.5;
+	pin_right.x = $$gamesetup.gameWidth - 33;
+	pin_right.y = $$gamesetup.gameHeight/2 - 200;
 
-  game.tsps.onLeave(function(data){
-    game.stage.removeChild(persons[data.id]);
-    persons.splice(data.id, 1);
-  })
+	var dop = new createjs.Bitmap("assets/images/kroon.png");
+	dop.scaleX = dop.scaleY = 0.5;
+	dop.regY = 183;
 
-  var personShape = new createjs.Shape();
-  personShape.graphics.beginFill("green").drawCircle(0, 0, 50);
+	var dopHolder = new createjs.Bitmap("assets/images/houder.png");
+	dopHolder.scaleX = dopHolder.scaleY = 0.5;
 
-  game.stage.addEventListener("stagemousemove", function(evt){
+	//add bottom screen visuals to stage
+	game.stage.addChild(string_left);
+	game.stage.addChild(string_right);
+	game.stage.addChild(pin_left);
+	game.stage.addChild(pin_right);
+	game.stage.addChild(dop);
+	game.stage.addChild(dopHolder);
 
-    personShape.x = evt.stageX;
-    personShape.y = evt.stageY;
+	game.tsps.onEnter(function(data){
+		var circle = new createjs.Shape();
+		circle.graphics.beginFill("#ccc").drawCircle(0, 0, 20);
+		game.stage.addChild(circle);
 
-  });
+		game.tsps.follow(circle, {x:0, y:0});
+		persons[data.id] = (circle);
 
-  $("#gameCanvas").on("mouseenter", function(){
-    game.stage.addChild(personShape);
-    persons[0] = personShape;
-  });
+		sendAddPersonEvent();
+	});
 
-  $("#gameCanvas").on("mouseout", function(){
-    game.stage.removeChild(personShape);
-    persons.splice(0, 1);
-  });
+	function sendAddPersonEvent(data) {
 
-  shootTimeOut = setInterval(function(){
-    is_shooting = true;
-    if (!person) return;
-    createjs.Tween.get(dopHolder, {override:true}).to(
-      {
-        x: $$gamesetup.gameWidth/2 - dopHolder.getBounds().width/4 ,
-        y: 200
-      },  1500 - (person.y-300) * 1.5,
-      createjs.Ease.elasticOut)
+		var total = objectSize(game.tsps.persons) + $scope.intensity.model;
+		console.log('person entered', total);
+		socket.send({
+			type: "person.entered",
+			total: total,
+			person: data || null
+		});
+	}
 
-    createjs.Tween.get(dop, {override:true}).to(
-      {
-        x: ($$gamesetup.gameWidth - person.x) ,
-        y: 0
-      },  700 - (person.y-300) * 1.5)
-      .call(function(){
-      socket.send({
-        type: "shot",
-        velocity: person.y,
-        shotX: ($$gamesetup.gameWidth - person.x)
-      });
-    });
+	game.tsps.onLeave(function(data){
+		game.stage.removeChild(persons[data.id]);
+		persons.splice(data.id, 1);
 
-    setTimeout(function(){
-      is_shooting = false;
-    }, 1200)
-  }, 6000)
+		sendRemovePersonEvent(data);
+	});
 
-  game.update = function(){
-    for (var firstKey in persons) break;
-    person = persons[firstKey];
+	function sendRemovePersonEvent(data) {
+		var total = objectSize(game.tsps.persons) + $scope.intensity.model;
+		console.log('person left', total, objectSize(game.tsps.persons));
+		socket.send({
+			type: "person.left",
+			total: total,
+			person: data || null
+		});
+	}
 
-    if(person){
+	$scope.$watch('intensity.model', function(newIntensity, oldIntensity) {
 
-      if(!catapult){
-        catapult = game.tsps.catapult(person, function(){
-          alert('Shoot!');
-        });
-        catapult.start();
-      }
+		if (oldIntensity < newIntensity) {
+			sendAddPersonEvent();
+		}
+		else {
+			sendRemovePersonEvent();
+		}
+	});
 
-      if(!is_shooting) {
-        dopHolder.x = person.x - dopHolder.getBounds().width/4;
-        dopHolder.y = person.y - 75;
 
-        dop.x = person.x - dop.getBounds().width/4;
-        dop.y = dopHolder.y+20;
+	var personShape = new createjs.Shape();
+	personShape.graphics.beginFill("green").drawCircle(0, 0, 50);
 
-        socket.send({
-          type: "aim",
-          crosshairX: person.x,
-          crosshairY: person.y
-        });
-      }
+	game.stage.addEventListener("stagemousemove", function(evt){
 
-      string_left.graphics.clear();
-      string_left.graphics.setStrokeStyle(5);
-      string_left.graphics.beginStroke("#4EA334");
-      string_left.graphics.moveTo(30, $$gamesetup.gameHeight/2-165);
-      string_left.graphics.lineTo(dopHolder.x+5, dopHolder.y+5);
-      string_left.graphics.endStroke();
+		personShape.x = evt.stageX;
+		personShape.y = evt.stageY;
 
-      string_right.graphics.clear();
-      string_right.graphics.setStrokeStyle(5);
-      string_right.graphics.beginStroke("#4EA334");
-      string_right.graphics.moveTo($$gamesetup.gameWidth-30, $$gamesetup.gameHeight/2-165);
-      string_right.graphics.lineTo(dopHolder.x-5+dopHolder.getBounds().width/2, dopHolder.y+5);
-      string_right.graphics.endStroke();
+	});
 
-    }else{
-      catapult = false;
-    }
-  }
+	$("#gameCanvas").on("mouseenter", function(){
+		game.stage.addChild(personShape);
+		persons[0] = personShape;
+	});
 
-})
+	$("#gameCanvas").on("mouseout", function(){
+		game.stage.removeChild(personShape);
+		persons.splice(0, 1);
+	});
+
+	shootTimeOut = setInterval(function(){
+		is_shooting = true;
+		if (!person) return;
+		createjs.Tween.get(dopHolder, {override:true}).to(
+			{
+				x: $$gamesetup.gameWidth/2 - dopHolder.getBounds().width/4 ,
+				y: 200
+			},  1500 - (person.y-300) * 1.5,
+			createjs.Ease.elasticOut)
+
+		createjs.Tween.get(dop, {override:true}).to(
+			{
+				x: ($$gamesetup.gameWidth - person.x) ,
+				y: 0
+			},  700 - (person.y-300) * 1.5)
+			.call(function(){
+				socket.send({
+					type: "shot",
+					velocity: person.y,
+					shotX: ($$gamesetup.gameWidth - person.x)
+				});
+			});
+
+		setTimeout(function(){
+			is_shooting = false;
+		}, 1200)
+	}, 6000)
+
+	game.update = function(){
+		for (var firstKey in persons) break;
+		person = persons[firstKey];
+
+		if(person){
+
+			if(!catapult){
+				catapult = game.tsps.catapult(person, function(){
+					alert('Shoot!');
+				});
+				catapult.start();
+			}
+
+			if(!is_shooting) {
+				dopHolder.x = person.x - dopHolder.getBounds().width/4;
+				dopHolder.y = person.y - 75;
+
+				dop.x = person.x - dop.getBounds().width/4;
+				dop.y = dopHolder.y+20;
+
+				/*socket.send({
+					type: "aim",
+					crosshairX: person.x,
+					crosshairY: person.y
+				});*/
+			}
+
+			string_left.graphics.clear();
+			string_left.graphics.setStrokeStyle(5);
+			string_left.graphics.beginStroke("#4EA334");
+			string_left.graphics.moveTo(30, $$gamesetup.gameHeight/2-165);
+			string_left.graphics.lineTo(dopHolder.x+5, dopHolder.y+5);
+			string_left.graphics.endStroke();
+
+			string_right.graphics.clear();
+			string_right.graphics.setStrokeStyle(5);
+			string_right.graphics.beginStroke("#4EA334");
+			string_right.graphics.moveTo($$gamesetup.gameWidth-30, $$gamesetup.gameHeight/2-165);
+			string_right.graphics.lineTo(dopHolder.x-5+dopHolder.getBounds().width/2, dopHolder.y+5);
+			string_right.graphics.endStroke();
+
+		}else{
+			catapult = false;
+		}
+	}
+
+
+
+
+	function objectSize(obj) {
+		var size = 0, key;
+		for (key in obj) {
+			if (obj.hasOwnProperty(key)) size++;
+		}
+		return size;
+	}
+});
