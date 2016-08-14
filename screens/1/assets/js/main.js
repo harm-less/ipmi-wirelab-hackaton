@@ -13,11 +13,6 @@ ng.controller('ControlsCtrl', function($scope) {
 
 	socket.connect();
 
-	socket.listen = function(data){
-		if (data.gameId !== gameID) return;
-		console.log("listening", data);
-	};
-
 
 	var persons = [];
 	var person;
@@ -30,7 +25,7 @@ ng.controller('ControlsCtrl', function($scope) {
 	};
 
 
-	var masterVolume = 0;
+	var masterVolume = 1;
 	var songs = [
 		{
 			speed: 250,
@@ -59,7 +54,7 @@ ng.controller('ControlsCtrl', function($scope) {
 			playSong(currentSong);
 
 			setSongLayerVolumes();
-		}, 1000);
+		}, 2000);
 	});
 
 	function playSong(song) {

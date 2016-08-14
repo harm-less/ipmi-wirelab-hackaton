@@ -12,7 +12,8 @@ ng.controller('ControlsCtrl', function($scope) {
 	var ANIMATION = {
 		ROTATION: 'rotation',
 		POSITION_X: 'position_x',
-		POSITION_Y: 'position_y'
+		POSITION_Y: 'position_y',
+		PULSE: 'pulse'
 	};
 
 	var DIRECTION = {
@@ -23,7 +24,7 @@ ng.controller('ControlsCtrl', function($scope) {
 
 	var debug = $scope.debug = game.debug;
 	var shouldListen = true;
-	var currentIntensity = 4;
+	var currentIntensity = 0;
 
 
 	var currentSong = {};
@@ -35,8 +36,8 @@ ng.controller('ControlsCtrl', function($scope) {
 	};
 
 	$scope.$watch('intensity.model', function(newIntensity) {
-		console.log(newIntensity);
 		currentIntensity = newIntensity;
+		animateGroups();
 	});
 
 
@@ -203,6 +204,83 @@ ng.controller('ControlsCtrl', function($scope) {
 		{
 			images: [
 				{
+					name: 'images/_0006_Hoofd-hoge-muts.png',
+					position: {
+						x: 155,
+						y: 10
+					},
+					pivot: {
+						x: 80,
+						y: 170
+					},
+					rotation: 0,
+					animations: [
+						{
+							type: ANIMATION.POSITION_X,
+							value:-.5,
+							multiplier: .4,
+							minIntensity: 3
+						},
+						{
+							type: ANIMATION.POSITION_Y,
+							value: -2,
+							multiplier: .4,
+							minIntensity: 3
+						},
+						{
+							type: ANIMATION.ROTATION,
+							value: 2,
+							multiplier: .4,
+							minIntensity: 3
+						}
+					]
+				}
+			]
+		},
+
+		// thinker
+		{
+			images: [
+				{
+					name: 'images/_0008_Hoofd-hoed-links.png',
+					position: {
+						x: 135,
+						y: 170
+					},
+					pivot: {
+						x: 80,
+						y: 100
+					},
+					rotation: 0,
+					animations: [
+						{
+							type: ANIMATION.POSITION_X,
+							value:-.5,
+							multiplier: .4,
+							minIntensity: 3
+						},
+						{
+							type: ANIMATION.POSITION_Y,
+							value: -2,
+							multiplier: .4,
+							minIntensity: 3
+						},
+						{
+							type: ANIMATION.ROTATION,
+							direction: DIRECTION.ANTI_CLOCKWISE,
+							value: 1,
+							multiplier: .1,
+							minIntensity: 3
+						}
+					]
+				}
+			]
+		},
+
+		// man behind foreground people
+		{
+			images: [
+				{
 					name: 'images/_0027_hoofd-Man-met-geweer.png',
 					position: {
 						x: 1275,
@@ -302,6 +380,31 @@ ng.controller('ControlsCtrl', function($scope) {
 							type: ANIMATION.POSITION_Y,
 							value: -2,
 							multiplier: .4,
+							minIntensity: 3
+						}
+					]
+				}
+			]
+		},
+		{
+			images: [
+				{
+					name: 'images/_0001_regerende-arm-rechts.png',
+					position: {
+						x: 1465,
+						y: 220
+					},
+					pivot: {
+						x: 265,
+						y: 30
+					},
+					rotation: 0,
+					animations: [
+						{
+							type: ANIMATION.ROTATION,
+							direction: DIRECTION.CLOCKWISE,
+							value: 1,
+							multiplier: 1,
 							minIntensity: 3
 						}
 					]
@@ -465,6 +568,86 @@ ng.controller('ControlsCtrl', function($scope) {
 			]
 		},
 
+		{
+			images: [
+				{
+					name: 'images/_0025_Geweer-Man-met-geweer.png',
+					position: {
+						x: 1275,
+						y: 400
+					},
+					pivot: {
+						x: 100,
+						y: 150
+					},
+					rotation: 0,
+					animations: [
+						{
+							type: ANIMATION.POSITION_X,
+							value:-.5,
+							multiplier: .4,
+							minIntensity: 3
+						},
+						{
+							type: ANIMATION.POSITION_Y,
+							value: -2,
+							multiplier: .4,
+							minIntensity: 3
+						},
+						{
+							type: ANIMATION.ROTATION,
+							value: 2,
+							multiplier: .4,
+							minIntensity: 3
+						}
+					],
+					images: [
+						{
+							name: 'images/laser.png',
+							position: {
+								x: 223,
+								y: -5
+							},
+							pivot: {
+								x: 13,
+								y: 13
+							},
+							rotation: 337,
+							animations: [
+								{
+									type: ANIMATION.PULSE,
+									minIntensity: 6
+								}
+							]
+						}
+					]
+				}
+			]
+		},
+
+		{
+			images: [
+				{
+					name: 'images/laser.png',
+					position: {
+						x: 243,
+						y: 290
+					},
+					pivot: {
+						x: 13,
+						y: 13
+					},
+					rotation: 246,
+					animations: [
+						{
+							type: ANIMATION.PULSE,
+							minIntensity: 6
+						}
+					]
+				}
+			]
+		},
+
 		// man in foreground (right)
 		{
 			images: [
@@ -486,6 +669,54 @@ ng.controller('ControlsCtrl', function($scope) {
 							value: 3,
 							multiplier: .5,
 							minIntensity: 3
+						}
+					]
+				}
+			]
+		},
+		{
+			images: [
+				{
+					name: 'images/_0007_Arm-zwaard-wit-pak.png',
+					position: {
+						x: 1215,
+						y: 420
+					},
+					pivot: {
+						x: 20,
+						y: 30
+					},
+					rotation: 0,
+					animations: [
+						{
+							type: ANIMATION.ROTATION,
+							direction: DIRECTION.CLOCKWISE,
+							value: 1,
+							multiplier: .5,
+							minIntensity: 3
+						}
+					],
+					images: [
+						{
+							name: 'images/_0009_Zwaard.png',
+							position: {
+								x: -120,
+								y: 190
+							},
+							pivot: {
+								x: 180,
+								y: 40
+							},
+							rotation: 0,
+							animations: [
+								{
+									type: ANIMATION.ROTATION,
+									direction: DIRECTION.CLOCKWISE,
+									value: 3,
+									multiplier: .5,
+									minIntensity: 3
+								}
+							]
 						}
 					]
 				}
@@ -660,7 +891,7 @@ ng.controller('ControlsCtrl', function($scope) {
 					name: 'images/_0007_Hoofd-drummer.png',
 					position: {
 						x: 1845,
-						y: 170
+						y: 240
 					},
 					pivot: {
 						x: 80,
@@ -671,7 +902,7 @@ ng.controller('ControlsCtrl', function($scope) {
 						{
 							type: ANIMATION.ROTATION,
 							direction: DIRECTION.CLOCKWISE,
-							value: 5,
+							value: 3,
 							multiplier: .2,
 						}
 					]
@@ -757,6 +988,8 @@ ng.controller('ControlsCtrl', function($scope) {
 			container.regX = pivotX;
 			container.regY = pivotY;
 
+			container.rotation = image.rotation || 0;
+
 			parent.addChild(container);
 
 			var bitmap = new createjs.Bitmap('assets/' + image.name);
@@ -823,7 +1056,8 @@ ng.controller('ControlsCtrl', function($scope) {
 
 					var animationValue = (intensityMultiplier * animation.value) + animation.value;
 
-					var animationTime = animation.time || currentSong.speed;
+					// ugly 250 millisecond hack
+					var animationTime = (animation.time || currentSong.speed) || 250;
 					var animationEaseTo = animation.easeTo || createjs.Ease.getPowInOut(2);
 					var animationEaseFrom = animation.easeFrom || createjs.Ease.getPowInOut(10);
 
@@ -889,6 +1123,31 @@ ng.controller('ControlsCtrl', function($scope) {
 							}
 							break;
 						}
+						case ANIMATION.PULSE :
+						{
+							var pulseTime = 120;
+							if (!resetToDefault) {
+
+								createjs.Tween.get(object, {loop: true})
+									.to({alpha: 1}, 1)
+									.wait(pulseTime)
+									.to({alpha: 0}, 1)
+									.wait(pulseTime)
+									.to({alpha: 1}, 1)
+									.wait(pulseTime)
+									.to({alpha: 0}, 1)
+									.wait(pulseTime)
+									.to({alpha: 1}, 1)
+									.wait(pulseTime)
+									.to({alpha: 0}, 1)
+									.wait(2000)
+									.call(checkTweenValidity);
+							}
+							else {
+								object.alpha = 0;
+							}
+							break;
+						}
 					}
 
 					animation.isPlaying = !resetToDefault;
@@ -908,6 +1167,7 @@ ng.controller('ControlsCtrl', function($scope) {
 
 
 	socket.listen = function(data) {
+
 		if (!data.gameId || (data && data.gameId !== gameId)) return;
 
 		if (data.type === 'intensity.changed') {
@@ -920,6 +1180,7 @@ ng.controller('ControlsCtrl', function($scope) {
 
 		if (data.type === 'song.changed') {
 			currentSong = data.song;
+			animateGroups();
 		}
 	};
 
@@ -928,7 +1189,7 @@ ng.controller('ControlsCtrl', function($scope) {
 
 
 
-	var bg = new createjs.Bitmap("assets/images/_0028_Layer-1.png");
+	var bg = new createjs.Bitmap("assets/images/_0037_Layer-1.png");
 	bg.y = -140;
 	stage.addChild(bg);
 
@@ -940,95 +1201,6 @@ ng.controller('ControlsCtrl', function($scope) {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	var monstersHit = 0;
-
-
-
-
-	var crosshair = new createjs.Bitmap("assets/images/crossfire.png");
-	crosshair.scaleX = crosshair.scaleY = 0.5;
-	game.stage.addChild(crosshair);
-
 	socket.connect();
-
-	var initShotFired = function() {
-		var shot = new createjs.Shape();
-		shot.graphics.beginFill("green").drawCircle(0, 0, 50);
-
-		shot.x = (game.get("shotX")/675) * $$gamesetup.gameWidth + crosshair.getBounds().width/4;;
-		shot.y = crosshair.y + crosshair.getBounds().height/4;
-
-		var monster = isMonster(shot);
-
-		if (monster){
-			monstersHit += 1
-			createjs.Tween.get(monster, {override:true}).to(
-				{
-					y: monster.y + 500,
-					alpha: 0
-				}, 500, createjs.Ease.elasticIn);
-
-			if(monstersHit == 5){
-
-				setTimeout(function(){
-					mon1.y=470;
-					mon1.alpha = 1;
-					mon2.y=330;
-					mon2.alpha = 1;
-					mon3.y=60;
-					mon3.alpha = 1;
-					mon4.y=480;
-					mon4.alpha = 1;
-					mon5.y=140;
-					mon5.alpha = 1;
-				}, 2000)
-
-				monstersHit = 0;
-			}
-
-		}
-
-		createjs.Tween.get(shot, {override:true}).to(
-			{
-				y: shot.y + 100,
-				alpha: 0
-			}, 500);
-
-		game.stage.addChild(shot);
-	}
-
-	var isMonster = function(shot){
-		var monsterHit = false
-		$.each(monsters, function(i, monster){
-			var x1 = monster.x
-			var x2 = monster.x + monster.getBounds().width;
-			var y1 = monster.y
-			var y2 = monster.y + monster.getBounds().height;
-
-			if(shot.x > x1 && shot.x < x2){
-				if (shot.y > y1 && shot.y < y2 ){
-					monsterHit = monster;
-				}
-			}
-		});
-
-		return monsterHit;
-	}
 
 });
