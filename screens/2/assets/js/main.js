@@ -1,11 +1,12 @@
 
 var ng = angular.module('hackaton', []);
 ng.controller('ControlsCtrl', function($scope) {
+	var gameId = 'rembrandt';
 	var game = new Game();
 	var stage = game.stage;
 	var initGame = game.init.bind(game);
 	initGame();
-	var socket = game.websocket("192.168.1.130", "1337", "catapult");
+	var socket = game.websocket("192.168.1.124", "4000", gameId);
 
 
 	var ANIMATION = {
@@ -20,18 +21,18 @@ ng.controller('ControlsCtrl', function($scope) {
 	};
 
 
-	var masterVolume = 0;
+	var masterVolume = 1;
 	var songs = [
 		{
 			speed: 250,
-			layers: 2
+			layers: 6
 		}
 	];
 	var currentSong = songs[0];
 	var songLayers = [];
 
 	var debug = true;
-	var currentIntensity = 1;
+	var currentIntensity = 0;
 
 
 	var queue = new createjs.LoadQueue(true);
@@ -41,7 +42,7 @@ ng.controller('ControlsCtrl', function($scope) {
 		var layerNames = [];
 		for (var i = 0;i < layers;i++) {
 			var id = 'song' + songIndex + '-' + i;
-			queue.loadFile({id: id, src: '../../src/sounds/songs/' + (songIndex + 1) + '/' + (i + 1) + '.wav', type: createjs.AbstractLoader.SOUND});
+			queue.loadFile({id: id, src: '../../src/sounds/songs/' + (songIndex + 1) + '/' + (i + 1) + '.mp3', type: createjs.AbstractLoader.SOUND});
 			layerNames.push(id);
 		}
 
@@ -92,6 +93,128 @@ ng.controller('ControlsCtrl', function($scope) {
 	var animationsGroups = [];
 
 	animationsGroups.push(
+		// man with musked
+		{
+			images: [
+				{
+					name: 'images/_0011_hoofd-man-rood-pak-links.png',
+					position: {
+						x: 260,
+						y: 205
+					},
+					pivot: {
+						x: 100,
+						y: 143
+					},
+					rotation: 0,
+					animations: [
+						{
+							type: ANIMATION.POSITION_Y,
+							value: -3,
+							multiplier: .2,
+							minIntensity: 3
+						},
+						{
+							type: ANIMATION.POSITION_X,
+							value: -2,
+							multiplier: .2,
+							minIntensity: 3
+						}
+					]
+				}
+			]
+		},
+		{
+			images: [
+				{
+					name: 'images/_0010_been-man-rood-pak-links.png',
+					position: {
+						x: 320,
+						y: 735
+					},
+					pivot: {
+						x: 45,
+						y: 30
+					},
+					rotation: 0,
+					animations: [
+						{
+							type: ANIMATION.ROTATION,
+							value: 1,
+							multiplier: 0.1,
+							minIntensity: 3
+						},
+						{
+							type: ANIMATION.POSITION_Y,
+							value: -8,
+							multiplier: 0.3,
+							minIntensity: 3
+						}
+					],
+					images: [
+						{
+							name: 'images/_0009_voet-man-rood-pak-links.png',
+							position: {
+								x: 38,
+								y: 150
+							},
+							pivot: {
+								x: 20,
+								y: 35
+							},
+							rotation: 0,
+							animations: [
+								{
+									type: ANIMATION.ROTATION,
+									value: 3,
+									direction: DIRECTION.CLOCKWISE,
+									maxIntensity: 4
+								}
+							]
+						}
+					]
+				}
+			]
+		},
+
+		// woman in white
+		{
+			images: [
+				{
+					name: 'images/_0008_hoofdje-zittende-vrouw-witte-jurk.png',
+					position: {
+						x: 510,
+						y: 405
+					},
+					pivot: {
+						x: 40,
+						y: 80
+					},
+					rotation: 0,
+					animations: [
+						{
+							type: ANIMATION.ROTATION,
+							value: 3,
+							multiplier: .2,
+							minIntensity: 3
+						},
+						{
+							type: ANIMATION.POSITION_Y,
+							value: -3,
+							multiplier: .2,
+							minIntensity: 3
+						},
+						{
+							type: ANIMATION.POSITION_X,
+							value: -2,
+							multiplier: .2,
+							minIntensity: 3
+						}
+					]
+				}
+			]
+		},
+
 		// man in foreground (left)
 		{
 			images: [
@@ -111,7 +234,7 @@ ng.controller('ControlsCtrl', function($scope) {
 							type: ANIMATION.ROTATION,
 							value: 3,
 							direction: DIRECTION.CLOCKWISE,
-							minIntensity: 3
+							minIntensity: 2
 						}
 					]
 				}
@@ -178,7 +301,7 @@ ng.controller('ControlsCtrl', function($scope) {
 					animations: [
 						{
 							type: ANIMATION.POSITION_Y,
-							value: -10,
+							value: -5,
 							multiplier:.2,
 							minIntensity: 1
 						}
@@ -280,6 +403,91 @@ ng.controller('ControlsCtrl', function($scope) {
 					]
 				}
 			]
+		},
+
+		// drummer on the right
+		{
+			images: [
+				{
+					name: 'images/_0007_Hoofd-drummer.png',
+					position: {
+						x: 1845,
+						y: 170
+					},
+					pivot: {
+						x: 80,
+						y: 123
+					},
+					rotation: 0,
+					animations: [
+						{
+							type: ANIMATION.ROTATION,
+							direction: DIRECTION.CLOCKWISE,
+							value: 5,
+							multiplier: .2,
+						}
+					]
+				}
+			]
+		},
+		{
+			images: [
+				{
+					name: 'images/_0006_drumarm.png',
+					position: {
+						x: 1785,
+						y: 390
+					},
+					pivot: {
+						x: 160,
+						y: 63
+					},
+					rotation: 0,
+					animations: [
+						{
+							type: ANIMATION.ROTATION,
+							direction: DIRECTION.CLOCKWISE,
+							value: 6,
+							multiplier: .01,
+							minIntensity: 2
+						}
+					]
+				}
+			]
+		},
+
+		// dog
+		{
+			images: [
+				{
+					name: 'images/_0002_hondekop.png',
+					position: {
+						x: 1575,
+						y: 810
+					},
+					pivot: {
+						x: 80,
+						y: 103
+					},
+					rotation: 0,
+					minIntensity: 4,
+					animations: [
+						{
+							type: ANIMATION.ROTATION,
+							direction: DIRECTION.CLOCKWISE,
+							value: 2,
+							multiplier: .5,
+							minIntensity: 4
+						},
+						{
+							type: ANIMATION.POSITION_Y,
+							value: 5,
+							multiplier: .2,
+							minIntensity: 4
+						}
+					]
+				}
+			]
 		}
 	);
 
@@ -346,6 +554,10 @@ ng.controller('ControlsCtrl', function($scope) {
 			// remove all tweens from the object
 			createjs.Tween.removeTweens(object);
 
+			if (image.minIntensity ) {
+				object.alpha = image.minIntensity > currentIntensity ? 0 : 1;
+			}
+
 			if (image.animations) {
 				angular.forEach(image.animations, function (animation) {
 
@@ -361,12 +573,10 @@ ng.controller('ControlsCtrl', function($scope) {
 						resetToDefault = true;
 					}
 
-					var intensityMultiplier = (currentIntensity * (animation.multiplier || 1)) || 1;
+					var intensityMultiplier = currentIntensity * (animation.multiplier || 1);
 
-					var animationValue = intensityMultiplier * animation.value;
+					var animationValue = (intensityMultiplier * animation.value) + animation.value;
 
-
-					console.log(intensityMultiplier, animationValue);
 					var animationTime = animation.time || currentSong.speed;
 					var animationEaseTo = animation.easeTo || createjs.Ease.getPowInOut(2);
 					var animationEaseFrom = animation.easeFrom || createjs.Ease.getPowInOut(10);
@@ -477,9 +687,17 @@ ng.controller('ControlsCtrl', function($scope) {
 	crosshair.scaleX = crosshair.scaleY = 0.5;
 	game.stage.addChild(crosshair);
 
-	socket.listen = function(event){
+	socket.listen = function(data){
+		if (data.gameId !== gameId) return;
 
-		var data = JSON.parse(event.data);
+		if (data.type === 'person.entered') {
+			$scope.intensity.model++;
+		}
+		if (data.type === 'person.left') {
+			$scope.intensity.model++;
+		}
+
+		return;
 
 		if (data.type == "shot"){
 			var velocity = $$gamesetup.gameHeight - ((data.velocity-100)/675) * $$gamesetup.gameHeight;

@@ -6,27 +6,28 @@ Game.prototype.websocket = function(ip, port, id){
     socket: false,
 
     connect: function(){
-      this.socket = new WebSocket('ws://' + ip + ':'+ port +'/' + id);
+      //this.socket = new WebSocket('ws://' + ip + ':'+ port +'/' + id);
 
-      console.log('connecting to game socket: ' + 'ws://' + ip + ':'+ port +'/' + id)
+      this.socket = io('ws://' + ip + ':'+ port);
 
-      this.socket.onopen = function(event) {
+      console.log('connecting to game socket: ' + 'ws://' + ip + ':'+ port)
+
+      this.socket.on('connect', function () {
         this.connected = true;
-        console.log('connected to game socket: ' + 'ws://' + ip + ':'+ port +'/' + id)
-      }.bind(this);
+        console.log('connected to game socket: ' + 'ws://' + ip + ':'+ port)
+      });
 
-      this.socket.onmessage = this.listen;
+      this.socket.on('application.message', function(data){this.listen(data)}.bind(this));
+
     },
 
-    listen:function(event){
-      console.log(JSON.parse(event.data));
+    listen:function(data){
+      if(data) console.log("received:",data);
     },
 
-    sendJson:function(data) {
-      if(this.connected) {
-        var jsonStr = JSON.stringify(data)
-        this.socket.send(jsonStr);
-      }
+    send:function(data) {
+      data.gameId = id;
+      this.socket.emit('application.message', data);
     },
   }
 }

@@ -4,56 +4,56 @@ var TSPS = TSPS || {};
 TSPS.LogLevel = TSPS.LOG_ERROR;
 
 /********************************************
-	UTILS
-********************************************/
+ UTILS
+ ********************************************/
 
-	TSPS.LOG_DEBUG 		 = 0;
-	TSPS.LOG_WARNING	 = 1;
-	TSPS.LOG_ERROR 		 = 2;
-	TSPS.LOG_FATAL_ERROR = 3;
+TSPS.LOG_DEBUG 		 = 0;
+TSPS.LOG_WARNING	 = 1;
+TSPS.LOG_ERROR 		 = 2;
+TSPS.LOG_FATAL_ERROR = 3;
 
-	TSPS.Log = function( message, level ){
-		var _level = ( level == null ? TSPS.LOG_DEBUG : level );
-		if ( _level >= TSPS.LogLevel ){
-			if ( console ){
-				switch ( _level ){
-					case TSPS.LOG_DEBUG:
-						console.log( message );
-						break;
-					case TSPS.LOG_WARNING:
-						console.warn( message );
-						break;
-					case TSPS.LOG_ERROR:
-					case TSPS.LOG_FATAL_ERROR:
-						console.error( message );
-						break;
-				}
+TSPS.Log = function( message, level ){
+	var _level = ( level == null ? TSPS.LOG_DEBUG : level );
+	if ( _level >= TSPS.LogLevel ){
+		if ( console ){
+			switch ( _level ){
+				case TSPS.LOG_DEBUG:
+					console.log( message );
+					break;
+				case TSPS.LOG_WARNING:
+					console.warn( message );
+					break;
+				case TSPS.LOG_ERROR:
+				case TSPS.LOG_FATAL_ERROR:
+					console.error( message );
+					break;
 			}
 		}
 	}
+}
 
 /********************************************
-	DISPATCHER
-********************************************/
+ DISPATCHER
+ ********************************************/
 
 /**
-	Creates a new TSPS parser + dispatcher
-	@constructor
-*/
+ Creates a new TSPS parser + dispatcher
+ @constructor
+ */
 
 TSPS.Dispatcher = function(){
 
 	/**
-		people
-		@type Object
-		Object with all current people sorted by ID
-	*/
+	 people
+	 @type Object
+	 Object with all current people sorted by ID
+	 */
 	this.people			= {};
 }
 /**
-@function
-Pass a new JSON object into here to add it into TSPS
-*/
+ @function
+ Pass a new JSON object into here to add it into TSPS
+ */
 TSPS.Dispatcher.prototype.onTSPSData		= function(json)
 {
 	if (json.type == "personEntered") this._onPersonEntered(json);
@@ -65,9 +65,9 @@ TSPS.Dispatcher.prototype.onTSPSData		= function(json)
 }
 
 /**
-@function
-@private
-*/
+ @function
+ @private
+ */
 TSPS.Dispatcher.prototype._onPersonEntered	= function(tspsObj){
 	// prevent this getting called more than once
 	if ( !this.people[tspsObj.id]){
@@ -78,9 +78,9 @@ TSPS.Dispatcher.prototype._onPersonEntered	= function(tspsObj){
 }
 
 /**
-@function
-@private
-*/
+ @function
+ @private
+ */
 TSPS.Dispatcher.prototype._onPersonUpdated	= function(tspsObj){
 	if (!this.people[tspsObj.id]){
 		this._onPersonEntered(tspsObj);
@@ -91,9 +91,9 @@ TSPS.Dispatcher.prototype._onPersonUpdated	= function(tspsObj){
 }
 
 /**
-@function
-@private
-*/
+ @function
+ @private
+ */
 TSPS.Dispatcher.prototype._onPersonMoved	= function(tspsObj){
 	if (!this.people[tspsObj.id]){
 		this._onPersonEntered(tspsObj);
@@ -104,9 +104,9 @@ TSPS.Dispatcher.prototype._onPersonMoved	= function(tspsObj){
 }
 
 /**
-@function
-@private
-*/
+ @function
+ @private
+ */
 TSPS.Dispatcher.prototype._onPersonLeft 	= function(tspsObj){
 	if (!this.people[tspsObj.id]){
 		TSPS.Log( "got weird id "+tspsObj.id);
@@ -119,9 +119,9 @@ TSPS.Dispatcher.prototype._onPersonLeft 	= function(tspsObj){
 }
 
 /**
-@function
-@private
-*/
+ @function
+ @private
+ */
 TSPS.Dispatcher.prototype._onCustomEvent 	= function(eventObj){
 	// not doing any processing at this point!
 	this.onCustomEvent(eventObj);
@@ -129,46 +129,46 @@ TSPS.Dispatcher.prototype._onCustomEvent 	= function(eventObj){
 
 
 /**
-override in your main app
-@function
-@example
-var tsps = new TSPS.Dispatcher();
-tsps.onPersonEntered = this.onPersonEntered;
-tsps.onPersonUpdated = this.onPersonUpdated;
-tsps.onPersonMoved = this.onPersonMoved;
-tsps.onPersonLeft = this.onPersonLeft;
-*/
+ override in your main app
+ @function
+ @example
+ var tsps = new TSPS.Dispatcher();
+ tsps.onPersonEntered = this.onPersonEntered;
+ tsps.onPersonUpdated = this.onPersonUpdated;
+ tsps.onPersonMoved = this.onPersonMoved;
+ tsps.onPersonLeft = this.onPersonLeft;
+ */
 TSPS.Dispatcher.prototype.onPersonEntered  = function(person){};
 /**
-override in your main app
-@function
-*/
+ override in your main app
+ @function
+ */
 TSPS.Dispatcher.prototype.onPersonUpdated  = function(person){};
 /**
-override in your main app
-@function
-*/
+ override in your main app
+ @function
+ */
 TSPS.Dispatcher.prototype.onPersonMoved  = function(person){};
 /**
-override in your main app
-@function
-*/
+ override in your main app
+ @function
+ */
 TSPS.Dispatcher.prototype.onPersonLeft  = function(person){};
 
 /**
-override in your main app
-@function
-*/
+ override in your main app
+ @function
+ */
 TSPS.Dispatcher.prototype.onCustomEvent  = function(person){};
 
 /********************************************
-	PERSON
-********************************************/
+ PERSON
+ ********************************************/
 
 /**
-	Creates a new TSPS person
-	@constructor
-*/
+ Creates a new TSPS person
+ @constructor
+ */
 
 TSPS.Person = function(){
 	this.id 			= -1;
@@ -193,42 +193,42 @@ TSPS.Person = function(){
 };
 
 /********************************************
-	COMPATIBILITY
-********************************************/
+ COMPATIBILITY
+ ********************************************/
 
 // add bind method for browsers that don't currently support it (such as Safari)
 if (!Function.prototype.bind) {
-  Function.prototype.bind = function (oThis) {
-	if (typeof this !== "function") {
-	  // closest thing possible to the ECMAScript 5 internal IsCallable function
-	  throw new TypeError("Function.prototype.bind - what is trying to be bound is not callable");
-	}
+	Function.prototype.bind = function (oThis) {
+		if (typeof this !== "function") {
+			// closest thing possible to the ECMAScript 5 internal IsCallable function
+			throw new TypeError("Function.prototype.bind - what is trying to be bound is not callable");
+		}
 
-	var aArgs = Array.prototype.slice.call(arguments, 1),
-		fToBind = this,
-		fNOP = function () {},
-		fBound = function () {
-		  return fToBind.apply(this instanceof fNOP
-								 ? this
-								 : oThis || window,
-							   aArgs.concat(Array.prototype.slice.call(arguments)));
-		};
+		var aArgs = Array.prototype.slice.call(arguments, 1),
+			fToBind = this,
+			fNOP = function () {},
+			fBound = function () {
+				return fToBind.apply(this instanceof fNOP
+						? this
+						: oThis || window,
+					aArgs.concat(Array.prototype.slice.call(arguments)));
+			};
 
-	fNOP.prototype = this.prototype;
-	fBound.prototype = new fNOP();
+		fNOP.prototype = this.prototype;
+		fBound.prototype = new fNOP();
 
-	return fBound;
-  };
+		return fBound;
+	};
 }
 
 /********************************************
-	CONNECTION
-********************************************/
+ CONNECTION
+ ********************************************/
 
 /**
-	TSPS Connection: Simple Websocket Wrapper
-	@constructor
-*/
+ TSPS Connection: Simple Websocket Wrapper
+ @constructor
+ */
 
 TSPS.Connection = function( host, port, protocol ){
 	TSPS.Dispatcher.call( this );			// extend dispatcher
@@ -242,8 +242,8 @@ TSPS.Connection.prototype = new TSPS.Dispatcher();
 TSPS.Connection.prototype.constructor = TSPS.Connection;
 
 /**
-@function
-*/
+ @function
+ */
 TSPS.Connection.prototype.connect = function(){
 	try {
 		this.socket = new WebSocket( "ws://" + this.host+":"+this.port );
@@ -256,8 +256,8 @@ TSPS.Connection.prototype.connect = function(){
 }
 
 /**
-@function
-*/
+ @function
+ */
 TSPS.Connection.prototype.send = function( data ) {
 	this.socket.send( data );
 }
@@ -265,8 +265,8 @@ TSPS.Connection.prototype.send = function( data ) {
 TSPS.Connection.prototype._onConnectionOpened = function() { this.onConnectionOpened(); }
 
 /**
-	@function
-*/
+ @function
+ */
 TSPS.Connection.prototype.onConnectionOpened = function() {
 	console.log( "connection opened");
 };
@@ -274,8 +274,8 @@ TSPS.Connection.prototype.onConnectionOpened = function() {
 TSPS.Connection.prototype._onConnectionClosed = function() { this.onConnectionClosed(); }
 
 /**
-@function
-*/
+ @function
+ */
 TSPS.Connection.prototype.onConnectionClosed = function() {
 	console.log( "connection closed");
 };
@@ -293,9 +293,8 @@ TSPS.Connection.prototype._onMessageReceived = function( evt ) {
 }
 
 /**
-Override in your main app to catch the raw TSPS data
-@function
-*/
+ Override in your main app to catch the raw TSPS data
+ @function
+ */
 TSPS.Connection.prototype.onMessageReceived = function( data ) {
 }
-

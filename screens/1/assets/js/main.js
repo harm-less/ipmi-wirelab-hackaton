@@ -1,10 +1,15 @@
 var game = new Game();
 var initGame = game.init.bind(game);
-var socket = game.websocket("192.168.1.130", "1337", "catapult");
+var socket = game.websocket("192.168.1.124", "4000", "rembrandt");
 
 socket.connect();
 
 $(document).ready( function() {
+
+  socket.listen = function(data){
+    console.log("listeningggg", data)
+  }
+
   var persons = [];
   var person;
 
@@ -92,7 +97,7 @@ $(document).ready( function() {
         y: 0
       },  700 - (person.y-300) * 1.5)
       .call(function(){
-      socket.sendJson({
+      socket.send({
         type: "shot",
         velocity: person.y,
         shotX: ($$gamesetup.gameWidth - person.x)
@@ -124,7 +129,7 @@ $(document).ready( function() {
         dop.x = person.x - dop.getBounds().width/4;
         dop.y = dopHolder.y+20;
 
-        socket.sendJson({
+        socket.send({
           type: "aim",
           crosshairX: person.x,
           crosshairY: person.y
