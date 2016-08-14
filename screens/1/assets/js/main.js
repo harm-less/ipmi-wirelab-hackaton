@@ -30,7 +30,7 @@ ng.controller('ControlsCtrl', function($scope) {
 	};
 
 
-	var masterVolume = 1;
+	var masterVolume = 0;
 	var songs = [
 		{
 			speed: 250,
@@ -221,6 +221,33 @@ ng.controller('ControlsCtrl', function($scope) {
 
 
 
+
+	var bg = new createjs.Bitmap("assets/images/bg.jpg");
+	game.stage.addChild(bg);
+
+	var comeCloser = new createjs.Bitmap("assets/images/_0001_Come-closer.png");
+	comeCloser.scaleX = comeCloser.scaleY = .5;
+	comeCloser.x = 280;
+	comeCloser.y = 200;
+	game.stage.addChild(comeCloser);
+
+	var bitmapAnd = new createjs.Bitmap("assets/images/_0002_&.png");
+	bitmapAnd.scaleX = bitmapAnd.scaleY = .4;
+	bitmapAnd.x = 600;
+	bitmapAnd.y = 330;
+	game.stage.addChild(bitmapAnd);
+
+	var formCrowd = new createjs.Bitmap("assets/images/_0001_Form-a-crowd.png");
+	formCrowd.scaleX = formCrowd.scaleY = .7;
+	formCrowd.x = 480;
+	formCrowd.y = 400;
+	game.stage.addChild(formCrowd);
+
+	var logo = new createjs.Bitmap("assets/images/_0000_M.png");
+	logo.scaleX = logo.scaleY = .5;
+	logo.x = 40;
+	logo.y = 580;
+	game.stage.addChild(logo);
 
 
 
