@@ -172,9 +172,11 @@ ng.controller('ControlsCtrl', function($scope) {
 
 
 	game.tsps.onEnter(function(data){
-		var circle = new createjs.Shape();
-		circle.graphics.beginFill("#ccc").drawCircle(0, 0, 20);
-		game.stage.addChild(circle);
+		if (debug) {
+			var circle = new createjs.Shape();
+			circle.graphics.beginFill("#ccc").drawCircle(0, 0, 20);
+			game.stage.addChild(circle);
+		}
 
 		game.tsps.follow(circle, {x:0, y:0});
 		persons[data.id] = (circle);
@@ -192,7 +194,9 @@ ng.controller('ControlsCtrl', function($scope) {
 	}
 
 	game.tsps.onLeave(function(data){
-		game.stage.removeChild(persons[data.id]);
+		if (debug) {
+			game.stage.removeChild(persons[data.id]);
+		}
 		persons.splice(data.id, 1);
 
 		sendRemovePersonEvent(data);
@@ -226,28 +230,42 @@ ng.controller('ControlsCtrl', function($scope) {
 	game.stage.addChild(bg);
 
 	var comeCloser = new createjs.Bitmap("assets/images/_0001_Come-closer.png");
-	comeCloser.scaleX = comeCloser.scaleY = .5;
-	comeCloser.x = 280;
-	comeCloser.y = 200;
+	comeCloser.x = 320;
+	comeCloser.y = 300;
 	game.stage.addChild(comeCloser);
 
 	var bitmapAnd = new createjs.Bitmap("assets/images/_0002_&.png");
-	bitmapAnd.scaleX = bitmapAnd.scaleY = .4;
-	bitmapAnd.x = 600;
-	bitmapAnd.y = 330;
+	bitmapAnd.scaleX = bitmapAnd.scaleY = .6;
+	bitmapAnd.x = 920;
+	bitmapAnd.y = 570;
 	game.stage.addChild(bitmapAnd);
 
 	var formCrowd = new createjs.Bitmap("assets/images/_0001_Form-a-crowd.png");
-	formCrowd.scaleX = formCrowd.scaleY = .7;
-	formCrowd.x = 480;
-	formCrowd.y = 400;
+	formCrowd.x = 750;
+	formCrowd.y = 700;
 	game.stage.addChild(formCrowd);
 
 	var logo = new createjs.Bitmap("assets/images/_0000_M.png");
 	logo.scaleX = logo.scaleY = .5;
 	logo.x = 40;
-	logo.y = 580;
+	logo.y = 1060;
 	game.stage.addChild(logo);
+
+	createjs.Tween.get(comeCloser, {loop: true})
+		.to({alpha: .5}, 1000, createjs.Ease.getPowInOut(2))
+		.to({alpha: 1}, 1000, createjs.Ease.getPowInOut(2));
+
+	createjs.Tween.get(bitmapAnd, {loop: true})
+		.to({alpha: .5}, 1000, createjs.Ease.getPowInOut(2))
+		.to({alpha: 1}, 1000, createjs.Ease.getPowInOut(2));
+
+	createjs.Tween.get(formCrowd, {loop: true})
+		.to({alpha: .5}, 1000, createjs.Ease.getPowInOut(2))
+		.to({alpha: 1}, 1000, createjs.Ease.getPowInOut(2));
+
+	createjs.Tween.get(bg, {loop: true})
+		.to({alpha: .5}, 1000, createjs.Ease.getPowInOut(2))
+		.to({alpha: 1}, 1000, createjs.Ease.getPowInOut(2));
 
 
 
@@ -267,19 +285,24 @@ ng.controller('ControlsCtrl', function($scope) {
 	});
 
 	$("#gameCanvas").on("mouseenter", function(){
-		game.stage.addChild(personShape);
+
+		if (debug) {
+			game.stage.addChild(personShape);
+		}
 		persons[0] = personShape;
 	});
 
 	$("#gameCanvas").on("mouseout", function(){
-		game.stage.removeChild(personShape);
+		if (debug) {
+			game.stage.removeChild(personShape);
+		}
 		persons.splice(0, 1);
 	});
 
 
 	game.update = function(){
 
-	}
+	};
 
 
 

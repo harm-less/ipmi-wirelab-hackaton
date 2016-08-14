@@ -823,9 +823,11 @@ ng.controller('ControlsCtrl', function($scope) {
 
 					var animationValue = (intensityMultiplier * animation.value) + animation.value;
 
-					var animationTime = animation.time || currentSong.speed;
+					var animationTime = (animation.time || currentSong.speed) || 250;
 					var animationEaseTo = animation.easeTo || createjs.Ease.getPowInOut(2);
 					var animationEaseFrom = animation.easeFrom || createjs.Ease.getPowInOut(10);
+
+					console.log(animationTime);
 
 					switch (animation.type) {
 						case ANIMATION.ROTATION :

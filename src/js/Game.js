@@ -1,5 +1,5 @@
 var Game = function(){
-  this.debug = true;
+  this.debug = false;
   this.tsps = new GameTSPS();
   this.stage = this.tsps.stage = new createjs.Stage("gameCanvas");
 
