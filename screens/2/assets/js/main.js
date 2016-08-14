@@ -22,27 +22,34 @@ ng.controller('ControlsCtrl', function($scope) {
 
 	var masterVolume = 0;
 	var songs = [
-		{layers: 2}
+		{
+			speed: 250,
+			layers: 2
+		}
 	];
+	var currentSong = songs[0];
 	var songLayers = [];
 
 	var debug = true;
-	var currentIntensity = 0;
+	var currentIntensity = 1;
 
 
 	var queue = new createjs.LoadQueue(true);
 	queue.installPlugin(createjs.Sound);
 	angular.forEach(songs, function(song, songIndex) {
 		var layers = song.layers;
+		var layerNames = [];
 		for (var i = 0;i < layers;i++) {
-			queue.loadFile({id: 'song' + songIndex + '-' + i, src: '../../src/sounds/songs/' + (songIndex + 1) + '/' + (i + 1) + '.mp3', type: createjs.AbstractLoader.SOUND});
-		};
+			var id = 'song' + songIndex + '-' + i;
+			queue.loadFile({id: id, src: '../../src/sounds/songs/' + (songIndex + 1) + '/' + (i + 1) + '.wav', type: createjs.AbstractLoader.SOUND});
+			layerNames.push(id);
+		}
+
+		song.layers = layerNames;
 	});
 
 	queue.on('complete', function(event) {
-		angular.forEach(queue.getItems(), function(sound) {
-			songLayers.push(createjs.Sound.play(sound.item.id, 0, 0, true));
-		});
+		playSong(currentSong);
 
 		setSongLayerVolumes();
 	});
@@ -61,6 +68,15 @@ ng.controller('ControlsCtrl', function($scope) {
 	});
 
 
+	function playSong(song) {
+		createjs.Sound.stop();
+
+		currentSong = song;
+		angular.forEach(song.layers, function(layerName) {
+			songLayers.push(createjs.Sound.play(layerName, {loop: -1}));
+		});
+	}
+
 	function setSongLayerVolumes() {
 		angular.forEach(songLayers, function(songLayer, index) {
 
@@ -75,54 +91,197 @@ ng.controller('ControlsCtrl', function($scope) {
 
 	var animationsGroups = [];
 
-	animationsGroups.push({
-		images: [
-			{
-				name: 'images/beugel.png',
-				position: {
-					x: 400,
-					y: 100
-				},
-				pivot: {
-					x: 0
-				},
-				rotation: 0,
-				animations: [
-					{
-						type: ANIMATION.ROTATION,
-						value: 3,
-						time: 200,
-						minIntensity: 3,
-						maxIntensity: 4
-					}
-				],
-				images: [
-					{
-						name: 'images/beugel.png',
-						position: {
-							x: 0,
-							y: 100
-						},
-						pivot: {
-							x: 161
-						},
-						rotation: 0,
-						animations: [
-							{
-								type: ANIMATION.ROTATION,
-								value: 10,
-								direction: DIRECTION.CLOCKWISE,
-								time: 200
-							}
-						]
-					}
-				]
-			}
-		]
-	});
+	animationsGroups.push(
+		// man in foreground (left)
+		{
+			images: [
+				{
+					name: 'images/_0018_hoofd-Man-rode-sherp-links-voor.png',
+					position: {
+						x: 800,
+						y: 170
+					},
+					pivot: {
+						x: 100,
+						y: 153
+					},
+					rotation: 0,
+					animations: [
+						{
+							type: ANIMATION.ROTATION,
+							value: 3,
+							direction: DIRECTION.CLOCKWISE,
+							minIntensity: 3
+						}
+					]
+				}
+			]
+		},
+		{
+			images: [
+				{
+					name: 'images/_0020_-arm-Man-rode-sherp-links-voor.png',
+					position: {
+						x: 920,
+						y: 335
+					},
+					pivot: {
+						x: 80,
+						y: 20
+					},
+					rotation: 0,
+					animations: [
+						{
+							type: ANIMATION.ROTATION,
+							value: -5,
+							multiplier: 0.1,
+							minIntensity: 3
+						}
+					],
+					images: [
+						{
+							name: 'images/_0019_Hand-Man-rode-sherp-links-voor.png',
+							position: {
+								x: -20,
+								y: 100
+							},
+							pivot: {
+								x: 80,
+								y: 45
+							},
+							rotation: 0,
+							animations: [
+								{
+									type: ANIMATION.ROTATION,
+									value: 3,
+									direction: DIRECTION.ANTI_CLOCKWISE,
+								}
+							]
+						}
+					]
+				}
+			]
+		},
+		{
+			images: [
+				{
+					name: 'images/_0017_been-Man-rode-sherp-links-voor.png',
+					position: {
+						x: 775,
+						y: 883
+					},
+					pivot: {
+						x: 80,
+						y: 20
+					},
+					rotation: 0,
+					animations: [
+						{
+							type: ANIMATION.POSITION_Y,
+							value: -10,
+							multiplier:.2,
+							minIntensity: 1
+						}
+					],
+					images: [
+						{
+							name: 'images/_0016_voet1-Man-rode-sherp-links-voor.png',
+							position: {
+								x: -35,
+								y: 100
+							},
+							pivot: {
+								x: 80,
+								y: 45
+							},
+							rotation: 0,
+							animations: [
+								{
+									type: ANIMATION.ROTATION,
+									value: 3,
+									direction: DIRECTION.ANTI_CLOCKWISE,
+									maxIntensity: 2
+								}
+							]
+						}
+					]
+				}
+			]
+		},
 
-	buildAnimationGroups();
-	animateGroups();
+		// man in foreground (right)
+		{
+			images: [
+				{
+					name: 'images/_0015_hoofd-man-wit-pak-rechts-voor.png',
+					position: {
+						x: 1075,
+						y: 240
+					},
+					pivot: {
+						x: 100,
+						y: 150
+					},
+					rotation: 0,
+					animations: [
+						{
+							type: ANIMATION.ROTATION,
+							direction: DIRECTION.ANTI_CLOCKWISE,
+							value: 3,
+							multiplier: .5,
+							minIntensity: 3
+						}
+					]
+				}
+			]
+		},
+		{
+			images: [
+				{
+					name: 'images/_0013_been-copy-man-wit-pak-rechts-voor.png',
+					position: {
+						x: 1070,
+						y: 880
+					},
+					pivot: {
+						x: 50,
+						y: 100
+					},
+					rotation: 0,
+					animations: [
+						{
+							type: ANIMATION.POSITION_Y,
+							value: -5,
+							multiplier: .5,
+							minIntensity: 3
+						}
+					],
+					images: [
+						{
+							name: 'images/_0012_voetje-man-wit-pak-rechtsvoor.png',
+							position: {
+								x: -20,
+								y: 100
+							},
+							pivot: {
+								x: 80,
+								y: 45
+							},
+							rotation: 0,
+							animations: [
+								{
+									type: ANIMATION.ROTATION,
+									value: 3,
+									direction: DIRECTION.ANTI_CLOCKWISE,
+									maxIntensity: 2
+								}
+							]
+						}
+					]
+				}
+			]
+		}
+	);
 
 
 	function buildAnimationGroup(group, parent) {
@@ -187,99 +346,101 @@ ng.controller('ControlsCtrl', function($scope) {
 			// remove all tweens from the object
 			createjs.Tween.removeTweens(object);
 
-			angular.forEach(image.animations, function(animation) {
-				console.log(animation);
+			if (image.animations) {
+				angular.forEach(image.animations, function (animation) {
 
+					var resetToDefault = false;
 
-				var resetToDefault = false;
+					var minIntensity = animation.minIntensity || 0;
+					var maxIntensity = animation.maxIntensity || 0;
 
-				var minIntensity = animation.minIntensity || 0;
-				var maxIntensity = animation.maxIntensity || 0;
-
-				if (minIntensity && minIntensity > currentIntensity) {
-					resetToDefault = true;
-				}
-				if (maxIntensity && maxIntensity < currentIntensity) {
-					resetToDefault = true;
-				}
-
-				var intensityMultiplier = (currentIntensity * (animation.multiplier || 1)) || 1;
-
-				var animationValue = intensityMultiplier * animation.value;
-				var animationTime = animation.time || 200;
-				var animationEaseTo = animation.easeTo || createjs.Ease.getPowInOut(2);
-				var animationEaseFrom = animation.easeFrom || createjs.Ease.getPowInOut(10);
-
-				console.log(animation.type, animationValue, animationTime);
-
-				switch(animation.type) {
-					case ANIMATION.ROTATION : {
-
-						var rotation = animationValue;
-
-						if (!resetToDefault) {
-
-							var direction = animation.direction || DIRECTION.CLOCKWISE;
-
-							// reset rotation to current default intensity
-							object.rotation = direction === DIRECTION.CLOCKWISE ? rotation : -rotation;
-
-							var to = direction === DIRECTION.CLOCKWISE ? -rotation : rotation;
-							var from = direction === DIRECTION.CLOCKWISE ? rotation : -rotation;
-
-							createjs.Tween.get(object, {loop: true})
-								.to({rotation: to}, animationTime, animationEaseTo)
-								.to({rotation: from}, animationTime, animationEaseFrom)
-								.call(checkTweenValidity);
-						}
-						else {
-							createjs.Tween.get(object, {})
-								.to({rotation: image.rotation}, animationTime, animationEaseFrom);
-						}
-						break;
+					if (minIntensity && minIntensity > currentIntensity || currentIntensity === 0) {
+						resetToDefault = true;
 					}
-					case ANIMATION.POSITION_X : {
-
-						var defaultX = (image.position.x || 0) + (image.pivot.x || 0);
-						var positionX = animationValue;
-
-						console.log(defaultX, positionX);
-
-						if (!resetToDefault) {
-							createjs.Tween.get(object, {loop: true})
-								.to({x: defaultX + positionX}, animationTime, animationEaseTo)
-								.to({x: defaultX}, animationTime, animationEaseFrom)
-								.call(checkTweenValidity);
-						}
-						else {
-							createjs.Tween.get(object, {})
-								.to({x: defaultX}, animationTime, animationEaseFrom);
-						}
-						break;
+					if (maxIntensity && maxIntensity < currentIntensity) {
+						resetToDefault = true;
 					}
-					case ANIMATION.POSITION_Y : {
-						var defaultY = (image.position.y || 0) + (image.pivot.y || 0);
-						var positionY = animationValue;
 
-						if (!resetToDefault) {
-							createjs.Tween.get(object, {loop: true})
-								.to({y: defaultY + positionY}, animationTime, animationEaseTo)
-								.to({y: defaultY}, animationTime, animationEaseFrom)
-								.call(checkTweenValidity);
+					var intensityMultiplier = (currentIntensity * (animation.multiplier || 1)) || 1;
+
+					var animationValue = intensityMultiplier * animation.value;
+
+
+					console.log(intensityMultiplier, animationValue);
+					var animationTime = animation.time || currentSong.speed;
+					var animationEaseTo = animation.easeTo || createjs.Ease.getPowInOut(2);
+					var animationEaseFrom = animation.easeFrom || createjs.Ease.getPowInOut(10);
+
+					switch (animation.type) {
+						case ANIMATION.ROTATION :
+						{
+
+							var rotation = animationValue;
+
+							if (!resetToDefault) {
+
+								var direction = animation.direction || DIRECTION.CLOCKWISE;
+
+								// reset rotation to current default intensity
+								object.rotation = direction === DIRECTION.CLOCKWISE ? rotation : -rotation;
+
+								var to = direction === DIRECTION.CLOCKWISE ? -rotation : rotation;
+								var from = direction === DIRECTION.CLOCKWISE ? rotation : -rotation;
+
+								createjs.Tween.get(object, {loop: true})
+									.to({rotation: to}, animationTime, animationEaseTo)
+									.to({rotation: from}, animationTime, animationEaseFrom)
+									.call(checkTweenValidity);
+							}
+							else {
+								createjs.Tween.get(object, {})
+									.to({rotation: image.rotation}, animationTime, animationEaseFrom);
+							}
+							break;
 						}
-						else {
-							createjs.Tween.get(object, {})
-								.to({y: defaultY}, animationTime, animationEaseFrom);
+						case ANIMATION.POSITION_X :
+						{
+
+							var defaultX = (image.position.x || 0) + (image.pivot.x || 0);
+							var positionX = animationValue;
+
+							if (!resetToDefault) {
+								createjs.Tween.get(object, {loop: true})
+									.to({x: defaultX + positionX}, animationTime, animationEaseTo)
+									.to({x: defaultX}, animationTime, animationEaseFrom)
+									.call(checkTweenValidity);
+							}
+							else {
+								createjs.Tween.get(object, {})
+									.to({x: defaultX}, animationTime, animationEaseFrom);
+							}
+							break;
 						}
-						break;
+						case ANIMATION.POSITION_Y :
+						{
+							var defaultY = (image.position.y || 0) + (image.pivot.y || 0);
+							var positionY = animationValue;
+
+							if (!resetToDefault) {
+								createjs.Tween.get(object, {loop: true})
+									.to({y: defaultY + positionY}, animationTime, animationEaseTo)
+									.to({y: defaultY}, animationTime, animationEaseFrom)
+									.call(checkTweenValidity);
+							}
+							else {
+								createjs.Tween.get(object, {})
+									.to({y: defaultY}, animationTime, animationEaseFrom);
+							}
+							break;
+						}
 					}
-				}
 
-				animation.isPlaying = !resetToDefault;
-				if (animation.isPlaying) {
-					totalAnimations += 1;
-				}
-			});
+					animation.isPlaying = !resetToDefault;
+					if (animation.isPlaying) {
+						totalAnimations += 1;
+					}
+				});
+			}
 
 			if (image.images && image.images.length) {
 				animateGroup(image);
@@ -297,8 +458,12 @@ ng.controller('ControlsCtrl', function($scope) {
 
 
 
+	var bg = new createjs.Bitmap("assets/images/_0028_Layer-1.png");
+	bg.y = -140;
+	stage.addChild(bg);
 
-
+	buildAnimationGroups();
+	animateGroups();
 
 
 
