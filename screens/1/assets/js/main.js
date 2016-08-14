@@ -55,9 +55,11 @@ ng.controller('ControlsCtrl', function($scope) {
 	});
 
 	queue.on('complete', function(event) {
-		playSong(currentSong);
+		setTimeout(function() {
+			playSong(currentSong);
 
-		setSongLayerVolumes();
+			setSongLayerVolumes();
+		}, 1000);
 	});
 
 	function playSong(song) {
@@ -87,7 +89,6 @@ ng.controller('ControlsCtrl', function($scope) {
 
 
 	function updateCurrentIntensity() {
-		console.log('update', expectedIntensity);
 		if (currentIntensity === expectedIntensity) return;
 
 		if (currentIntensity > expectedIntensity) {
@@ -187,9 +188,7 @@ ng.controller('ControlsCtrl', function($scope) {
 	function sendAddPersonEvent(data) {
 
 		var total = objectSize(game.tsps.persons) + $scope.intensity.model;
-		console.log('person entered', total);
 		expectedIntensity = Math.max(0, Math.min(6, total));
-		console.log('entered', currentIntensity);
 		debouncedCurrentIntensity();
 	}
 
@@ -204,10 +203,8 @@ ng.controller('ControlsCtrl', function($scope) {
 
 	function sendRemovePersonEvent(data) {
 		var total = objectSize(game.tsps.persons) + $scope.intensity.model;
-		console.log('person left', total, objectSize(game.tsps.persons));
 
 		expectedIntensity = Math.max(0, Math.min(6, total));
-		console.log('left', currentIntensity);
 		debouncedCurrentIntensity();
 	}
 
